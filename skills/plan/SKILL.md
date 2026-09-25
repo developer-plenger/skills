@@ -12,7 +12,7 @@ description: >
 
 # Plan — raw idea to specification
 
-`/plan` turns whatever the user has into two artifacts: `docs/plan/SPEC.md` — what will be built, in 19 sections — and `docs/plan/CONTEXT.md` — the one-page memory every later skill reads each session. The user is not expected to arrive with a PRD, and is not expected to have thought through their own idea. Finding the gaps is this skill's job.
+`/plan` turns whatever the user has into two artifacts: `docs/plan/SPEC.md` — what will be built, in 19 sections — and `docs/plan/CONTEXT.md` — the one-page memory every later skill reads each session, which now carries the project's own facts: its purpose, its stack, and its conventions. `AGENTS.md` registers the skill pack and says nothing about the project, so this is the run that discovers the stack and records the conventions in `CONTEXT.md`. The user is not expected to arrive with a PRD, and is not expected to have thought through their own idea. Finding the gaps is this skill's job.
 
 Read `references/discovery.md` before step 3, `references/evaluation.md` before step 4, and `references/specification.md` plus `references/context.md` before step 8. Each holds a contract; none of the artifact formats live in this file.
 
@@ -20,7 +20,7 @@ Read `references/discovery.md` before step 3, `references/evaluation.md` before 
 
 ### 1. Read the context
 
-In order: `AGENTS.md` at the repo root, `docs/plan/CONTEXT.md` if present, then the artifact being planned — the user's idea text, the brief file given as an argument, or the existing codebase if the idea lands on one. If `AGENTS.md` is missing, stop and tell the user to run `/init` first: without the operating context, later skills will not know the conventions this spec must respect.
+In order: `AGENTS.md` at the repo root, `docs/plan/CONTEXT.md` if present, then the artifact being planned — the user's idea text, the brief file given as an argument, or the existing codebase if the idea lands on one. If `AGENTS.md` is missing, stop and tell the user to run `/init` first: without it the pack is not registered and no later skill knows where the artifacts go. `AGENTS.md` carries only the pack contract — this run supplies the project facts it lacks.
 
 If `docs/plan/SPEC.md` already exists, this is a revision, not a first draft. Say so, and change only the sections the new information touches.
 
@@ -36,7 +36,12 @@ Write down what the user actually asked for, in their terms, before interpreting
 
 Apply the extraction procedure in `references/discovery.md` to pull out the target user, features, workflow, data, integrations and constraints the idea implies. Where the idea lands on an existing codebase, read enough of it to know what the idea can build on and what it contradicts — the repo's real constraints beat the idea's imagined ones.
 
-**Done when:** you have a draft requirements list where every entry is either sourced from the idea/repo/user, or flagged as your inference.
+This run also owns the project's own facts, because `AGENTS.md` no longer carries them. Detect the stack and the conventions from the repository and record each with the file that proves it, for `CONTEXT.md`'s `Technology` and `Project Rules` sections:
+
+- **Stack** — language, framework, package manager, test runner, build tooling, database, deployment. Use `references/discovery.md` §4 for reading an existing codebase; a fresh repository with no code yet leaves these to the idea and the user's answers.
+- **Conventions** — branching, commit style, formatting, and the commands to run before finishing. Derive what the repo proves (`git log`, config files, a `Makefile` or manifest script) and ask the user only for what it does not.
+
+**Done when:** you have a draft requirements list where every entry is either sourced from the idea/repo/user, or flagged as your inference, and a stack-and-conventions list with a proving file or an answer behind each entry.
 
 ### 4. Critique through the five lenses
 
@@ -66,7 +71,7 @@ Batch the ambiguity list into one round of questions using the rules in `referen
 
 Write `docs/plan/SPEC.md` following `references/specification.md`: all 19 sections, in order, each filled or explicitly `None`/`Unknown`. Number functional requirements `FR-001` onward, one per testable behaviour. Record only decisions actually taken in §18, each with its reason and the alternatives dropped. Write acceptance criteria in §19 so `/check` can turn each into pass/fail evidence. Park anything unresolved in §17 — never in an unnumbered aside inside another section.
 
-Then write `docs/plan/CONTEXT.md` following `references/context.md`: all 12 sections, in order, within the one-page budget.
+Then write `docs/plan/CONTEXT.md` following `references/context.md`: all 13 sections, in order, within the one-page budget. Fill `Technology` and `Project Rules` from the stack-and-conventions list from step 3, each entry backed by the file or answer that proved it — `unknown` where neither exists, never a guess.
 
 **Done when:** both files exist under `docs/plan/`, every section is filled or explicitly empty, every functional requirement is numbered and testable, and no unresolved question lives outside §17.
 

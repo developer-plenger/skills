@@ -27,7 +27,7 @@ The rule:
 - `SKILL.md` — procedure: the steps, the order, the exit condition, the guards. Short enough to load unconditionally.
 - `references/` — formats and checklists: loaded only at the step that needs them. A file with the exact section list of `SPEC.md` belongs here, not in the procedure.
 
-For example, `skills/plan/SKILL.md` describes understanding the idea, critiquing it, finding ambiguity, asking questions, and writing the two documents. The nineteen-section format lives in `skills/plan/references/specification.md`, and the twelve-section format lives in `skills/plan/references/context.md`. The same split applies to `slice` (vertical-slice and dependency rules), `exec` (implementation and completion), `review` (checklist and findings), `check` (testing and result recording), and `fix` (remediation).
+For example, `skills/plan/SKILL.md` describes understanding the idea, critiquing it, finding ambiguity, asking questions, and writing the two documents. The nineteen-section format lives in `skills/plan/references/specification.md`, and the thirteen-section format lives in `skills/plan/references/context.md`. The same split applies to `slice` (vertical-slice and dependency rules), `exec` (implementation and completion), `review` (checklist and findings), `check` (testing and result recording), and `fix` (remediation).
 
 ## Context mechanisms
 
@@ -35,15 +35,15 @@ Five mechanisms carry context, each answering a different question, each with on
 
 | Mechanism | Question it answers | Where it lives | Written by |
 | --- | --- | --- | --- |
-| `AGENTS.md` | How does the agent work in this project? | project root | `/init` |
-| `CONTEXT.md` | What is this project? | `docs/plan/CONTEXT.md` | `/plan`, plus every skill writing the `Current Phase` cursor |
+| `AGENTS.md` | How does the pack work — which skills exist, what each produces, where artifacts go? | project root | `/init` |
+| `CONTEXT.md` | What is this project, and what are its stack and conventions? | `docs/plan/CONTEXT.md` | `/plan`, plus every skill writing the `Current Phase` cursor |
 | `SPEC.md` | What must be built? | `docs/plan/SPEC.md` | `/plan` |
 | Phase files | What do we do next? | `docs/phases/phase-NN-<slug>.md` | `/slice` |
 | Checkboxes | What is already done? | inside the phase file | `/exec`, `/review`, `/check`, `/fix` |
 
-The chain runs top to bottom: how to work, then what the project is, then what to build, then what to do, then what is finished.
+The chain runs top to bottom: how the pack works, then what the project is, then what to build, then what to do, then what is finished.
 
-`AGENTS.md` is deliberately not documentation for humans only. It is the file every other skill reads before acting, so it carries the workflow registration and the per-skill rules. `CONTEXT.md` is deliberately short and re-read every session, so the agent never has to load the whole spec to remember what the product is.
+`AGENTS.md` is the pack's registration file: it is identical in every project and carries no project content, because the skills' behaviour does not vary by project. It is deliberately not documentation for humans only — it is the file every other skill reads before acting, so it carries the workflow registration and the per-skill rules. Everything that *is* project-specific — the stack, the conventions, the purpose — lives in `CONTEXT.md`, which is deliberately short and re-read every session so the agent never has to load the whole spec to remember what the product is.
 
 ## Ownership map
 

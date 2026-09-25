@@ -1,134 +1,193 @@
-# AGENTS.md contract, detection checklist, merge rule, evidence rule
+# AGENTS.md — the pack contract
 
-Everything `/init` needs to produce a project's operating context. Read this file before step 2 of `SKILL.md`.
+Everything `/developer-plenger:init` needs to write, check and repair `AGENTS.md`.
+Read this file before step 2 of `SKILL.md`.
 
-## 1. AGENTS.md, section by section
+## 1. What AGENTS.md is
 
-Write the sections in this order. One section missing is an incomplete run.
+`AGENTS.md` registers the skill pack for the agents working in this repository.
+It says which skills exist, what each one produces, where each artifact lives, and
+how task state works. Its content is **the same in every project** — it is pack
+contract, not project description.
 
-| Section | What belongs in it |
-|---|---|
-| `# Project Context` | Title only; the file is the project's shared context for every later skill. |
-| `## Project` | Name, one-line description, repository layout summary (3–6 top-level directories and what lives in each). |
-| `## Purpose` | Why the project exists, in the user's terms — not a feature list. |
-| `## Target Users` | Who uses it, one line each. Internal/admin roles count. |
-| `## Features` | Bullet list of what the product does. Capabilities, not implementations. |
-| `## Architecture` | The shape: monolith/services, boundaries, data stores, external services. Two to six lines; a diagram only if it already exists in the repo. |
-| `## Technology` | The detected stack, one line per layer: language, framework, package manager, test runner, build tooling, database, deployment. Each entry names the fact's source file. |
-| `## Workflow` | The registered chain: `INIT → PLAN → SLICE → EXEC → (REVIEW ∥ CHECK) → FIX`. State that REVIEW and CHECK are siblings of EXEC, that CHECK runs per finished slice/phase by default (plus whenever a task needs a test to be trusted), and that FIX resets the boxes its change invalidated. |
-| `## Skill Rules` | One `### <SKILL NAME>` per skill — all seven — each saying what the skill does in this project, its invocation, its input artifact, and its output artifact. See §2. |
-| `## Project Rules` | The project's own conventions: branching, commit style, formatting, commands to run before finishing, anything the user told you that is not already covered. Keep to facts you were given. |
-| `## Artifacts` | The seven-artifact table below, verbatim in shape. |
-| `## Task State` | The rule from §3. |
+It deliberately does **not** describe the project. Purpose, target users,
+features, stack, architecture and the project's own conventions are project
+facts; they live in `docs/plan/CONTEXT.md`, which `/developer-plenger:plan`
+writes. A skill that needs them reads that file. See
+`skills/plan/references/context.md`.
 
-Two sections here are different in kind from the rest. `## Skill Rules` and `## Artifacts` are the pack's own contract and are always identical from project to project; everything else is this project's content.
+Two consequences, and they define this skill:
 
-If any project-specific section cannot be filled from evidence, write `unknown` rather than a plausible guess. A later skill can resolve an `unknown`; it cannot recover from a confident error.
+- **`/init` asks the user nothing.** There is no project-specific content to
+  gather, so there is no question worth asking. The whole run is: read, compare,
+  write, report.
+- **`/init` never inspects the codebase** to infer a stack, a purpose, or an
+  architecture. Inferring those is `/plan`'s job, done once there is an idea to
+  anchor them to. Detection here would produce exactly the project description
+  this file is meant to stop carrying.
 
-## 2. Skill Rules entries
+## 2. The canonical text
 
-Write one `###` per skill, using this shape:
+Write this content verbatim. It is the whole file. Because it is identical in
+every project, conformance is a comparison, not a judgement call — there is no
+section to fill in, no placeholder to resolve, no `unknown` to mark.
 
-```markdown
-### PLAN
+~~~~markdown
+# developer-plenger skill pack
 
-Turn a raw idea into a specification.
+This file registers the `developer-plenger` skill pack for every agent working in
+this repository. `/developer-plenger:init` writes and maintains it, and its
+content is the same in every project: it describes how the pack's skills work,
+never what this project is. Project-specific facts — the stack, the conventions,
+the purpose — live in `docs/plan/CONTEXT.md`, written by `/developer-plenger:plan`.
 
-- Invocation: `/plan <idea>`
-- Input: the user's idea, or an existing codebase plus the idea that lands on it
-- Produces: `docs/plan/SPEC.md`, `docs/plan/CONTEXT.md`
+## Workflow
+
+The registered chain is:
+
+```text
+INIT → PLAN → SLICE → EXEC → (REVIEW ∥ CHECK) → FIX
 ```
 
-| Skill | Invocation | Produces |
-|---|---|---|
-| INIT | `/init` | `AGENTS.md` |
-| PLAN | `/plan` | `docs/plan/SPEC.md`, `docs/plan/CONTEXT.md` |
-| SLICE | `/slice` | `docs/phases/phase-NN-<slug>.md` |
-| EXEC | `/exec TASK-NNN` or `/exec phase-NN` | source code; checks `Implemented` |
-| REVIEW | `/review TASK-NNN` or `/review phase-NN` | `docs/reviews/TASK-NNN.md`; checks `Reviewed` when no unresolved finding of Medium or higher remains |
-| CHECK | `/check TASK-NNN` or `/check phase-NN` | `docs/checks/TASK-NNN.md`; checks `Tested` when every acceptance criterion has passing evidence |
-| FIX | `/fix TASK-NNN#FINDING-NNN` or `/fix TASK-NNN` | fixes plus `docs/fixes/TASK-NNN.md`; resets the boxes its change invalidated |
+- REVIEW and CHECK are siblings of EXEC, never a chain: the edges are `exec → review` and `exec → check`, never `exec → review → check`. Either may run first, either may run without the other, and both may run on the same task.
+- CHECK runs per finished slice or phase by default, plus whenever a single task needs a test result before anyone can trust it.
+- FIX repairs what review and check surfaced, then resets the checkboxes its change invalidated.
 
-Task IDs are global and unique across phases (`TASK-001`), zero-padded to three digits. Phase IDs come from the filename (`phase-01`). Findings are numbered inside their review doc (`FINDING-001`) and referenced as `TASK-003#FINDING-001`.
+Invoke with `/developer-plenger:init`, `/developer-plenger:plan`, `/developer-plenger:slice`, `/developer-plenger:exec TASK-NNN`, `/developer-plenger:review TASK-NNN`, `/developer-plenger:check TASK-NNN`, `/developer-plenger:fix TASK-NNN`. Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all seven.
 
-## 3. Artifacts table and Task State rule
-
-```markdown
 ## Artifacts
+
+Every hand-off is a file in the repository, never chat state. Nothing important lives in the conversation.
 
 | Artifact | Written by | Location |
 |---|---|---|
-| Operating context | `/init` | `AGENTS.md` |
-| Specification | `/plan` | `docs/plan/SPEC.md` |
-| Project context | `/plan` | `docs/plan/CONTEXT.md` |
-| Phase plan | `/slice` | `docs/phases/phase-NN-<slug>.md` |
-| Review | `/review` | `docs/reviews/TASK-NNN.md` |
-| Check | `/check` | `docs/checks/TASK-NNN.md` |
-| Fix | `/fix` | `docs/fixes/TASK-NNN.md` |
-```
+| Operating context | `/developer-plenger:init` | `AGENTS.md` |
+| Specification | `/developer-plenger:plan` | `docs/plan/SPEC.md` |
+| Project context | `/developer-plenger:plan` | `docs/plan/CONTEXT.md` |
+| Phase plan | `/developer-plenger:slice` | `docs/phases/phase-NN-<slug>.md` |
+| Review | `/developer-plenger:review` | `docs/reviews/TASK-NNN.md` |
+| Check | `/developer-plenger:check` | `docs/checks/TASK-NNN.md` |
+| Fix | `/developer-plenger:fix` | `docs/fixes/TASK-NNN.md` |
 
-```markdown
+The skill that writes an artifact also creates its directory: `/plan` creates `docs/plan/`, `/slice` creates `docs/phases/`, `/review` creates `docs/reviews/`, `/check` creates `docs/checks/`, and `/fix` creates `docs/fixes/`.
+
+Task IDs are global and unique across phases: `TASK-001`, `TASK-002`, zero-padded to three digits. Phase IDs come from the filename: `phase-01`, `phase-02`. Findings are numbered inside their own review document — `FINDING-001` in `docs/reviews/TASK-003.md` — and referenced elsewhere as `TASK-003#FINDING-001`.
+
+## Skill Rules
+
+One entry per skill. All seven, in this shape.
+
+### INIT
+
+Prepare the pack's operating context. Writes this file and asks nothing.
+
+- Invocation: `/developer-plenger:init`
+- Input: the repository's `AGENTS.md`, if one already exists
+- Produces: `AGENTS.md`
+
+### PLAN
+
+Turn a raw idea into a specification, and record the project's stack and conventions.
+
+- Invocation: `/developer-plenger:plan <idea>`
+- Input: the user's idea, and the existing codebase when the idea lands on one
+- Produces: `docs/plan/SPEC.md`, `docs/plan/CONTEXT.md`
+
+### SLICE
+
+Cut a stable specification into ordered vertical slices and tasks.
+
+- Invocation: `/developer-plenger:slice`
+- Input: `docs/plan/SPEC.md`
+- Produces: `docs/phases/phase-NN-<slug>.md`, and the global task ID sequence
+
+### EXEC
+
+Implement a task, and check its `Implemented` box only once the code actually runs. Never check a box the code does not earn.
+
+- Invocation: `/developer-plenger:exec TASK-NNN` or `/developer-plenger:exec phase-NN`
+- Input: the phase file, `docs/plan/SPEC.md`, `docs/plan/CONTEXT.md`, and the existing source
+- Produces: source code; checks `Implemented`
+
+### REVIEW
+
+Review an implementation against its spec and acceptance criteria, recording one numbered finding per problem. Never edits the code it reviews.
+
+- Invocation: `/developer-plenger:review TASK-NNN` or `/developer-plenger:review phase-NN`
+- Input: the task, the spec section it came from, its acceptance criteria, and the implementation
+- Produces: `docs/reviews/TASK-NNN.md`; checks `Reviewed` when no unresolved finding of Medium or higher remains
+
+### CHECK
+
+Detect the testing ecosystem instead of assuming one, then prove each acceptance criterion. Never checks `Tested` without passing evidence.
+
+- Invocation: `/developer-plenger:check TASK-NNN` or `/developer-plenger:check phase-NN`
+- Input: the task's acceptance criteria and the implementation
+- Produces: `docs/checks/TASK-NNN.md`; checks `Tested` when every acceptance criterion has passing evidence
+
+### FIX
+
+Repair what review and check surfaced, then reset the boxes that evidence no longer covers. Never checks a box; reset always means `- [ ]`.
+
+- Invocation: `/developer-plenger:fix TASK-NNN#FINDING-NNN` or `/developer-plenger:fix TASK-NNN`
+- Input: `docs/reviews/TASK-NNN.md` and/or `docs/checks/TASK-NNN.md`
+- Produces: fixes plus `docs/fixes/TASK-NNN.md`; resets the boxes its change invalidated
+
 ## Task State
 
 Task state lives in the three checkboxes on the task: `Implemented`, `Reviewed`, `Tested`. There is never a `status:` field. One owner per box:
 
-- `Implemented` is set by `/exec`.
-- `Reviewed` is set by `/review`, only when no unresolved finding of severity Medium or higher remains.
-- `Tested` is set by `/check`, only when every acceptance criterion has passing evidence.
+- `Implemented` is set by `/developer-plenger:exec`.
+- `Reviewed` is set by `/developer-plenger:review`, only when no unresolved finding of severity Medium or higher remains.
+- `Tested` is set by `/developer-plenger:check`, only when every acceptance criterion has passing evidence.
 
-`DONE` is derived: all three boxes checked. It is never stored. `/fix` resets the boxes its change invalidated; a code change always resets `Reviewed` and `Tested`.
-```
+`DONE` is derived: all three boxes checked. It is never stored. `/developer-plenger:fix` resets the boxes its change invalidated; a code change always resets `Reviewed` and `Tested`.
+~~~~
 
-## 4. Detection checklist
+`templates/AGENTS.md` in the pack repository is a copy-paste seed of the same text.
+If the two ever diverge, this file wins — re-copy the template from here.
 
-Look for these files and derive: language(s), framework(s), package manager, test runner, build tooling, database, deployment target, CI, existing docs, git presence.
+## 3. The conformance check
 
-| Thing to detect | Files that prove it |
+The sections, in order, and what makes each one conformant:
+
+| Section | Conformant when |
 |---|---|
-| Language | file extensions across the tree; `go.mod`, `Cargo.toml`, `pyproject.toml`, `Gemfile`, `pom.xml`, `build.gradle`, `*.csproj` |
-| Framework | dependencies in the manifest: `next`, `react`, `django`, `flask`, `fastapi`, `rails`, `spring`, `laravel` |
-| Package manager | lockfiles: `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `uv.lock`, `poetry.lock`, `Pipfile.lock`, `Gemfile.lock`, `go.sum` |
-| Test runner | manifest scripts and dev-dependencies (`vitest`, `jest`, `pytest`, `playwright`, `rspec`); config files (`vitest.config.*`, `jest.config.*`, `pytest.ini`, `tox.ini`, `phpunit.xml`); `*_test.go` files |
-| Build tooling | `Makefile`, `justfile`, `Taskfile`, `vite.config.*`, `webpack.config.*`, `tsconfig.json`, `Dockerfile`, `docker-compose.yml`, `.github/workflows/*`, `.gitlab-ci.yml` |
-| Database | `prisma/schema.prisma`, `migrations/`, `alembic.ini`, `db/schema.rb`, `.env.example` database URLs |
-| Existing docs | `README*`, `docs/**`, `CONTRIBUTING*`, `CHANGELOG*`, ADRs |
-| Agent context | `AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md` |
-| Git | `.git/` present; current branch; whether `docs/` is tracked |
+| `# developer-plenger skill pack` | The title, and the paragraph naming the pack, saying the content is project-independent, and pointing at `docs/plan/CONTEXT.md` for project facts. |
+| `## Workflow` | The chain, the REVIEW/CHECK sibling rule, the CHECK cadence, the FIX reset rule, and the namespaced invocation sentence — all seven. |
+| `## Artifacts` | The seven-row table, the directory-creation sentence, and the ID-convention paragraph. |
+| `## Skill Rules` | Exactly one `###` per skill — all seven, no more and no fewer — each with its one-line description, invocation, input and output. |
+| `## Task State` | The three named boxes, the no-`status:` rule, one owner per box with its condition, and the derived-`DONE` sentence. |
 
-Record the proving file next to each detected fact. A detection with no proving file is a guess and does not go in `AGENTS.md`.
+A file missing a section, carrying a section with drifted content, or naming a
+skill count other than seven is non-conformant.
 
-Commands worth running, when the tool exists and the repo is small enough: `git log --oneline -10` for commit style, `git status` for work in progress, and the project's own `test`/`build` scripts only if the user asks — never run them as part of detection.
+## 4. What to do with an existing AGENTS.md or CLAUDE.md
 
-## 5. Merge rule for an existing AGENTS.md or CLAUDE.md
+Never clobber the user's file. The pack's sections are canonical; anything else
+in the file is the user's and survives.
 
-Never clobber. The user's file wins.
-
-1. Read the existing file in full.
-2. Identify which pack sections are already present, under any heading names the user chose.
-3. Add only the missing sections. Leave existing sections where they are, in the user's order; do not reshuffle a file you did not write.
-4. Where an existing section covers the same ground with different wording, keep the user's wording and fold in only the missing facts — `## Skill Rules` and `## Artifacts` are the exception: they are pack contract, so if the file already has its own workflow registration, extend it rather than duplicating the table twice.
-5. Never delete content to "tidy" the file.
-
-### AGENTS.md exists
-
-Refresh it in place. Everything already there survives unless the user says otherwise.
+1. Read the existing `AGENTS.md` in full.
+2. Compare it against §3.
+3. If every section conforms, write nothing and say so.
+4. If a pack section is missing or drifted, write the canonical version into
+   place. Do not reshuffle the user's own sections, and do not delete content
+   that is not a pack section — a file that also carries project notes keeps
+   them; report what you left in place and where it belongs
+   (`docs/plan/CONTEXT.md`, usually).
+5. If a later `/plan` run has already written `docs/plan/CONTEXT.md`, that file
+   is the home for anything project-shaped that the old `AGENTS.md` held. Point
+   the user at it rather than moving content yourself — `/init` does not own
+   `CONTEXT.md` beyond its `Current Phase` cursor.
 
 ### CLAUDE.md exists
 
-Claude Code reads `CLAUDE.md`; this pack is canonical on `AGENTS.md`. Pick one of two dispositions and tell the user which and why:
+Claude Code reads `CLAUDE.md`; this pack is canonical on `AGENTS.md`. Pick one of
+two dispositions and tell the user which and why:
 
 - **Symlink** — recommended when `CLAUDE.md` has no instructions that differ per tool: move any unique content from `CLAUDE.md` into `AGENTS.md`, then replace `CLAUDE.md` with a symlink (`ln -sf AGENTS.md CLAUDE.md`). One source of truth; both tools read the same file; no future drift.
 - **Duplicate with a pointer** — when the user wants tool-specific instructions in `CLAUDE.md`, or the filesystem/git setup does not carry symlinks well (e.g. checked out on Windows without symlink support). Keep `CLAUDE.md` as a short file that points at `AGENTS.md` and holds only what applies to Claude Code alone; accept that every future change to shared content must be made in both.
 
-Both `AGENTS.md` and `CLAUDE.md` existing with overlapping content and no pointer is the failure mode to avoid: the two drift and later skills read different truths.
-
-## 6. Evidence rule
-
-Every line written into `AGENTS.md` traces to one of exactly two sources:
-
-1. a file you read in this session, or
-2. an answer the user gave you.
-
-Anything else is written `unknown` — including things that are probably true. `unknown` is a valid, honest state that a later skill resolves; a plausible guess is not, because no later skill knows to revisit it.
-
-When the user answers a question, that answer is evidence and may be quoted as its source.
+Both `AGENTS.md` and `CLAUDE.md` existing with overlapping content and no pointer
+is the failure mode to avoid: the two drift and later skills read different
+truths.

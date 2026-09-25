@@ -34,7 +34,11 @@ This file is read every session. Keep it under one page.
 
 ## Technology
 
-{{The stack, one line per layer.}}
+{{The stack, one line per layer: language, framework, package manager, test runner, build tooling, database, deployment. Each entry names the file that proves it.}}
+
+## Project Rules
+
+{{This project's own conventions: branching, commit style, formatting, the commands to run before finishing. Facts backed by the repo or given by the user.}}
 
 ## Current Development Status
 

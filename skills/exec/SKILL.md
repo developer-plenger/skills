@@ -17,7 +17,7 @@ you touch is the `Implemented` box in the phase file and `docs/plan/CONTEXT.md`.
 
 Read, in this order:
 
-1. `AGENTS.md` — project rules, conventions, and the registered workflow.
+1. `AGENTS.md` — the registered workflow, artifact paths and skill rules.
 2. `docs/plan/CONTEXT.md` — the one-page summary; it tells you what exists.
 3. The phase file you were pointed at, under `docs/phases/`.
 

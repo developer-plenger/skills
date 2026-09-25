@@ -16,9 +16,9 @@ A fact is worth putting here if a later skill would otherwise have to re-derive 
 - A decision already made, so it is not relitigated task after task.
 - A status that tells a skill where in the chain the project is.
 
-What does not earn a line: task-level detail, anything already in a phase file, anything already in `AGENTS.md` verbatim, feature descriptions the spec covers at length, and anything that changed this week.
+What does not earn a line: task-level detail, anything already in a phase file, any fact the pack's `AGENTS.md` already states, feature descriptions the spec covers at length, and anything that changed this week.
 
-## The 12 sections, in order
+## The 13 sections, in order
 
 ```markdown
 # Project Context
@@ -31,6 +31,7 @@ What does not earn a line: task-level detail, anything already in a phase file, 
 ## Important Business Rules
 ## Architecture
 ## Technology
+## Project Rules
 ## Current Development Status
 ## Important Decisions
 ## Known Constraints
@@ -46,13 +47,23 @@ What does not earn a line: task-level detail, anything already in a phase file, 
 | User Flow | The primary journey as a compact numbered list. | 3–7 steps |
 | Important Business Rules | The rules a later change could plausibly violate. | a few bullets |
 | Architecture | The shape: components, boundaries, data stores, external services. | 3–6 lines |
-| Technology | The stack, one line per layer. | one line per layer |
+| Technology | The stack, one line per layer: language, framework, package manager, test runner, build tooling, database, deployment. Each entry names the file that proves it. | one line per layer |
+| Project Rules | This project's own conventions: branching, commit style, formatting, the commands to run before finishing — anything a skill needs that the pack's `AGENTS.md` does not carry. Keep to facts backed by the repo or given by the user. | a few bullets |
 | Current Development Status | Which phases exist and how far along; the count of tasks by state. | 1–3 lines |
 | Important Decisions | Decisions taken, each with its reason, one line each. | a few lines |
 | Known Constraints | Hard limits: budget, deadline, compliance, existing systems. | a few bullets |
 | Current Phase | One of the seven step names `INIT`, `PLAN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX` — written by the skill that just ran, as its own name. No `TASK-NNN` suffix, no free text. | one word |
 
 `Current Development Status` and `Current Phase` are the only sections every skill touches. The rest change when a decision or a constraint actually changes.
+
+## Why project facts live here and not in AGENTS.md
+
+`AGENTS.md` is the pack's registration file: it is the same in every project and
+carries no project content. Everything a skill used to read out of it — the
+stack, and the conventions to follow before finishing — belongs here instead, so
+there is one place a project's own facts are written and one owner for them
+(`/plan`). A skill that opens `AGENTS.md` expecting project facts is reading a
+stale mental model; `Technology` and `Project Rules` are where they live now.
 
 ## Update discipline
 
@@ -64,4 +75,4 @@ What does not earn a line: task-level detail, anything already in a phase file, 
 
 ## At the end of /plan
 
-Write the file fresh — created by this run — with all 12 sections filled from `SPEC.md`, and `Current Phase` set to `PLAN`. `Current Development Status` describes reality: no phase files exist yet, so say exactly that rather than inventing phase numbers.
+Write the file fresh — created by this run — with all 13 sections filled from `SPEC.md` and the stack-and-conventions discovery, and `Current Phase` set to `PLAN`. `Technology` and `Project Rules` come from reading the repository; each entry names its proving file or the answer that supplied it, and a fresh repository with neither gets `unknown`. `Current Development Status` describes reality: no phase files exist yet, so say exactly that rather than inventing phase numbers.

@@ -19,7 +19,7 @@ suite you edited into passing has proved nothing.
 
 Read, in order:
 
-1. `AGENTS.md` — how this project wants work done.
+1. `AGENTS.md` — the registered workflow, artifact paths and skill rules.
 2. `docs/plan/CONTEXT.md` — what the project actually is.
 3. The phase file under `docs/phases/` that holds the task.
 4. The task block itself, especially its Acceptance Criteria.

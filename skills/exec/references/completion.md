@@ -33,11 +33,12 @@ Discover the runner; never assume it. Look at what the repo declares, then use i
 - **CLI** — invoke the binary with the arguments the criterion names.
 - **Library** — the smallest caller that exercises the changed API; a script in a
   temp directory is fine, and you may remove it after (never leave it in the repo).
-- **No build system at all** — run the thing the README/AGENTS.md says how to run,
+- **No build system at all** — run the thing the README or `docs/plan/CONTEXT.md` says how to run,
   or the plain interpreter/compiler invocation.
 
-Read `AGENTS.md` first for the project's own commands — a repo that documents
-`make dev` should not be started with a guess.
+Read `docs/plan/CONTEXT.md` first for the project's own commands — its `Project
+Rules` section carries the conventions and the commands to run before finishing,
+and a repo that documents `make dev` should not be started with a guess.
 
 Manual smoke is acceptable evidence and often the right one. Record the exact
 command and what it printed; do not describe what it "should" do.

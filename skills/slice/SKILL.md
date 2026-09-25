@@ -19,7 +19,7 @@ writes planning artifacts only, never source code.
 
 Read, in this order:
 
-1. `AGENTS.md` — project rules and the registered workflow.
+1. `AGENTS.md` — the registered workflow, artifact paths and skill rules.
 2. `docs/plan/CONTEXT.md` — the one-page project summary.
 3. `docs/plan/SPEC.md` — the thing you are slicing.
 
