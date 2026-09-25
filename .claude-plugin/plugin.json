@@ -1,0 +1,17 @@
+{
+  "name": "developer-plenger",
+  "version": "1.0.0",
+  "description": "An end-to-end, spec-driven development workflow shipped as one plugin. Seven skills cover the whole path: init writes the AI operating context, plan turns an idea into a specification, slice cuts the spec into vertical-slice phases and tasks, exec writes the code, review audits it against the spec, check proves it with tests, and fix repairs what review and check surface. Each skill owns a distinct artifact or a distinct checkbox transition, and writes its progress into a file rather than into the conversation.",
+  "author": {
+    "name": "developer-plenger"
+  },
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "spec-driven",
+    "planning",
+    "vertical-slice",
+    "review",
+    "testing"
+  ]
+}

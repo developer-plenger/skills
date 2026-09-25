@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "developer-plenger",
+  "description": "Spec-driven, vertical-slice development workflow for Claude Code.",
+  "owner": {
+    "name": "developer-plenger"
+  },
+  "plugins": [
+    {
+      "name": "developer-plenger",
+      "description": "Seven skills that carry a project from idea to reviewed, tested, done: init, plan, slice, exec, review, check, fix.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

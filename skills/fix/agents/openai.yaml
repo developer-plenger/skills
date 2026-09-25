@@ -1,0 +1,7 @@
+# Descriptor for OpenAI-compatible agent runners (Codex, ChatGPT agent mode).
+# Claude Code ignores this file and reads SKILL.md directly.
+name: fix
+description: Remediate review findings and check failures at the root cause, recording the change and resetting stale checkboxes.
+instructions: ../SKILL.md
+model: gpt-5
+tools: [shell, read_file, write_file, apply_patch, search]

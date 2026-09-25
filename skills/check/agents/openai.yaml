@@ -1,0 +1,7 @@
+# Descriptor for OpenAI-compatible agent runners (Codex, ChatGPT agent mode).
+# Claude Code ignores this file and reads SKILL.md directly.
+name: check
+description: Prove a task's acceptance criteria with real test runs and record the evidence.
+instructions: ../SKILL.md
+model: gpt-5
+tools: [shell, read_file, write_file, apply_patch, search]
