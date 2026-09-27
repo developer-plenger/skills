@@ -1,6 +1,6 @@
 {
   "name": "developer-plenger",
-  "version": "4.0.0",
+  "version": "2.0.0",
   "description": "An end-to-end, spec-driven development workflow shipped as one plugin. Every /plan run creates its own folder — specs/NN-<plan-slug>/ with a spec.md stating what that plan builds — and /slice cuts that spec into its own development stages at slice/NN-pK/tasks.md. Seven skills cover the whole path: init registers the pack in AGENTS.md and creates an empty context.md, plan writes the next plan's spec, slice sequences it, exec writes the code, review audits it against that plan's spec, check proves it with tests, and fix repairs what review and check surface. A later plan never edits an earlier one: plans are history, and context.md's Current Development Status is the ledger that spans them.",
   "author": {
     "name": "developer-plenger"
