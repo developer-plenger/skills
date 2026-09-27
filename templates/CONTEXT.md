@@ -1,22 +1,23 @@
 # Project Context
 
-This file is read every session. Keep it under one page.
+Read every session. One page. The detail lives in each plan's own
+`specs/NN-<plan-slug>/spec.md`; this file is the memory that spans them.
 
 ## Project
 
-{{Project name, and one line identifying it.}}
+{{App name, and one line identifying it.}}
 
 ## Purpose
 
-{{The outcome the project exists to produce.}}
+{{The outcome this app exists to produce, in the user's terms.}}
 
 ## Target Users
 
-{{Who the users are, in one or two lines.}}
+{{The roles, one per line.}}
 
 ## Core Features
 
-- {{Capability names, not descriptions. Three to eight bullets.}}
+- {{Capability names, not descriptions. Grows as /plan adds features.}}
 - {{Feature B}}
 - {{Feature C}}
 
@@ -42,7 +43,18 @@ This file is read every session. Keep it under one page.
 
 ## Current Development Status
 
-{{Which phases exist and how far along, plus the count of tasks by state. One to three lines.}}
+<!-- One line per plan folder, in this shape:
+       - plan-NN — <plan slug> — <stage states> — <what that plan builds>
+     Stage numbering restarts in every plan, so write that plan's own p0..pN.
+     A plan with no slices yet reads "not sliced yet" in the state slot.
+     The last clause summarises that plan's spec.md — it is what a reader uses
+     to know what the project does without opening a spec, so never omit it.
+     Past ~8 plan lines, collapse the oldest finished plans into a range.
+     /plan writes the line; every later skill edits only the state slot. -->
+
+- plan-01 — initial build — not sliced yet — {{the capabilities this plan delivers, one clause}}
+
+{{N}} tasks total, 0 done.
 
 ## Important Decisions
 
@@ -56,4 +68,5 @@ This file is read every session. Keep it under one page.
 
 PLAN
 
-<!-- One of INIT, PLAN, SLICE, EXEC, REVIEW, CHECK, FIX. The skill that just ran writes its own name here, with no TASK-NNN suffix. -->
+<!-- One of INIT, PLAN, SLICE, EXEC, REVIEW, CHECK, FIX. The skill that just ran
+     writes its own name here. No task ID, no slice name, no free text. -->

@@ -1,5 +1,9 @@
 # Review — TASK-001
 
+<!-- Lives at specs/NN-<plan-slug>/reviews/TASK-001.md, inside the plan folder that
+     holds the task. Task IDs restart per plan, so the plan folder is what makes
+     this filename unique. -->
+
 ## Summary
 
 {{What was reviewed: the task, its spec section, and its acceptance criteria. One paragraph on the overall state — what holds and what does not.}}

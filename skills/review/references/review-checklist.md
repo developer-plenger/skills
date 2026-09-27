@@ -12,7 +12,7 @@ catalogue of everything imperfect.
 
 - Does the code do what SPEC section 8 requires of this feature, and satisfy
   SPEC section 19 for it?
-- Does every acceptance criterion in the phase file map to a code path that
+- Does every acceptance criterion in the slice file map to a code path that
   satisfies it, including the behaviour a criterion implies but does not spell
   out (a required field that must be rejected, an empty list that must return
   `[]` rather than error)?

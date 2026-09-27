@@ -4,7 +4,7 @@
 
 Search for the feature, do not open guessed paths. In order:
 
-1. Task files if named, plus the phase's other tasks — they often create the
+1. Task files if named, plus the slice's other tasks — they often create the
    function you are about to edit.
 2. The feature's existing entry point: the route table, the CLI command
    registration, the export barrel. That is where the repo declares what exists.
@@ -82,13 +82,13 @@ misunderstood.
 
 **Stop, report, and propose a `/slice` amendment — do not silently redefine the
 task.** Silently implementing "the sensible version" replaces the plan with
-whatever the implementer guessed, and the phase file then describes something
+whatever the implementer guessed, and the slice file then describes something
 nobody built: the next task slices against the old text, `/review` checks the
 wrong criteria, and the spec drifts one silent correction at a time.
 
 In practice: stop before writing the wrong change; keep any work that still
 matches the description; report the conflict with the evidence (the file, the
 existing caller, the failing assumption); propose the amended description or
-criteria; and let `/slice` apply it and re-decide the affected phase. If the user
+criteria; and let `/slice` apply it and re-decide the affected stages. If the user
 waives the amendment, note that in the report — a small, purely local ambiguity
 may be resolved in the description's own words, and the report must say so.

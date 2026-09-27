@@ -2,7 +2,7 @@
 
 ## The three boxes
 
-A task's state is the three checkboxes in its phase file — nothing else. There is
+A task's state is the three checkboxes in its slice file — nothing else. There is
 no `status:` field, and adding one is not an option: it would be a second source
 of truth that disagrees with the boxes the moment anyone checks one.
 
@@ -27,16 +27,24 @@ pre-checking them makes `/review` and `/check` look like they ran.
 
 ## Locating a task
 
-`TASK-NNN` lives in exactly one file under `docs/phases/`. Find it by grep:
+`TASK-NNN` restarts per plan, so it identifies a task only together with the plan
+folder that holds it. Find it by grepping **the plan you are working in**:
 
 ```
-grep -rn "^### TASK-003" docs/phases
+grep -rn "^### TASK-003" specs/NN-<plan-slug>/slice
 ```
 
-One hit, in a `### TASK-003 — …` heading: proceed. **Two or more hits: stop and
-report.** A duplicated ID means review and check artifacts point at one of several
-tasks, and picking one silently writes state into the wrong place. The fix is a
-`/slice` amendment — renumber the duplicate — not a guess by `/exec`.
+One hit, in a `### TASK-003 — …` heading: proceed — the path names the stage.
+**Two or more hits inside one plan: stop and report.** A duplicated ID means review
+and check artifacts point at one of several tasks, and picking one silently writes
+state into the wrong place. The fix is a `/slice` amendment — renumber the
+duplicate — not a guess by `/exec`.
+
+Grep the plan folder, not all of `specs/`: the same ID legitimately exists in every
+other plan that has been sliced, so a repository-wide grep returns one hit per plan
+and the rule above would halt a plan with nothing wrong with it. Which plan to
+write into is settled before the grep — each skill's step 2 resolves it, and asks
+when a bare `TASK-NNN` is ambiguous.
 
 The `^### ` anchor is load-bearing, not decoration: an unanchored grep also
 matches every `#### Dependencies` edge and `### BLOCKED BY` reference, so a
@@ -60,11 +68,11 @@ invalidates Reviewed/Tested (it always does; the fixing skill performs that part
 Ambiguity is not a reason to leave it half-set: the box is checked when the
 path runs and unchecked when it does not. "Almost working" is unchecked.
 
-## `/exec phase-01`
+## `/exec NN-<plan-slug>/NN-pK`
 
-Walk the phase's tasks in dependency order, one at a time:
+Walk the slice's tasks in dependency order, one at a time:
 
-1. Read the phase file and build the order from `#### Dependencies` — a task
+1. Read the slice file and build the order from `#### Dependencies` — a task
    whose blockers are all checked comes before it. Ties: keep file order.
 2. For each task: if any dependency is unchecked, **skip it** and continue to the
    next ready task. Never reorder the list to unblock yourself, and never
@@ -75,5 +83,5 @@ Walk the phase's tasks in dependency order, one at a time:
 4. Tasks skipped as blocked get reported at the end with the specific unchecked
    dependency that held them. If every remaining task is blocked, stop and report;
    do not implement blockers outside their own task's description.
-5. When the phase's tasks are all checked (or all reachable ones are), report the
-   phase summary and say what `/review` and `/check` should run on next.
+5. When the slice's tasks are all checked (or all reachable ones are), report the
+   slice summary and say what `/review` and `/check` should run on next.

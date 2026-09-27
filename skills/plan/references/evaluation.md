@@ -5,7 +5,7 @@
 The rule that follows every lens: a finding becomes exactly one of —
 
 1. a **question** to the user (it needs intent you do not have),
-2. a **constraint** in `SPEC.md` §16 (it is a limit the design must respect), or
+2. a **constraint** in `spec.md` §16 (it is a limit the design must respect), or
 3. an explicit **non-goal** in §4 (it is deliberately out of scope).
 
 A finding that becomes none of these is a silent assumption and must not ship. That is the single rule this reference exists to enforce.
@@ -40,7 +40,7 @@ Ask:
 - For each feature: what does the user do before and after it? Are those steps present?
 - Does any feature exist only because it is technically interesting?
 
-**Scope challenge (mandatory).** A feature with no user story behind it is a non-goal until the user justifies it. State this plainly when it applies: put the feature in §4 Non-Goals with one line saying it has no user story, and let the user overrule. Silently including an unjustified feature inflates every phase that follows; silently deleting it loses something the user wanted.
+**Scope challenge (mandatory).** A feature with no user story behind it is a non-goal until the user justifies it. State this plainly when it applies: put the feature in §4 Non-Goals with one line saying it has no user story, and let the user overrule. Silently including an unjustified feature inflates every slice that follows; silently deleting it loses something the user wanted.
 
 | Weak | Strong |
 |---|---|
@@ -111,4 +111,4 @@ Ask:
 Two habits, applied across all five lenses:
 
 - **Ask who it is for.** An idea that cannot name its user is not ready to specify; send it back as a question rather than specifying it anyway.
-- **Ask what it replaces.** A feature that duplicates existing behaviour, in this repo or in a service the user already pays for, is worth one question before it becomes a phase.
+- **Ask what it replaces.** A feature that duplicates existing behaviour — in this repo, or in a service the user already pays for — is worth one question before it becomes a slice. On a later plan this is the first question: the app's own §8 is where duplication hides, and a request that restates an existing requirement is a misunderstanding rather than a task.

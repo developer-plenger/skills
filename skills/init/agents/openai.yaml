@@ -1,7 +1,7 @@
 # Descriptor for OpenAI-compatible agent runners (Codex, ChatGPT agent mode).
 # Claude Code ignores this file and reads SKILL.md directly.
 name: init
-description: Register the developer-plenger skill pack by writing AGENTS.md, the pack's workflow, artifacts and skill rules. Asks nothing.
+description: Register the developer-plenger skill pack by writing AGENTS.md and creating an empty context.md. Asks nothing.
 instructions: ../SKILL.md
 model: gpt-5
 tools: [shell, read_file, write_file, apply_patch, search]

@@ -1,6 +1,6 @@
 # State Machine
 
-Task progress in this pack is three independent flags, not one status field. The flags live in the phase file as checkboxes, and nothing else carries state.
+Task progress in this pack is three independent flags, not one status field. The flags live in the slice file as checkboxes, and nothing else carries state.
 
 ## The three flags
 
@@ -98,7 +98,7 @@ A task whose `#### Dependencies` list contains an unchecked task must not be imp
 
 ## State is in the file
 
-Because the flags are checkboxes in `docs/phases/phase-NN-<slug>.md`:
+Because the flags are checkboxes in `specs/NN-<plan-slug>/slice/NN-pK/tasks.md`:
 
 - progress is visible in a diff, in a code review, and in any editor;
 - no external database or tool is required to read the current state;
@@ -111,4 +111,8 @@ Because the flags are checkboxes in `docs/phases/phase-NN-<slug>.md`:
 exec -> (review || check) -> fix -> (review || check) -> ...
 ```
 
-The loop exits for a task when all three boxes are checked. The loop exits for a phase when every task in the phase file is `DONE`, at which point `/slice` produces the next phase.
+The loop exits for a task when all three boxes are checked. The loop exits for a stage when every task in its `tasks.md` is `DONE`, at which point the next stage is already waiting at the next number — `/slice` appends `04-p3` when that plan's stages end at `03-p2`.
+
+Task state does not cross plan boundaries. `TASK-001` is the first task **of one plan**, and the sequence restarts in the next plan folder, so the plan folder is part of a task's identity: `specs/02-monthly-budgets/reviews/TASK-003.md` and `specs/01-initial-build/reviews/TASK-003.md` are different records of different tasks. A requirement's `FR-NNN` restarts the same way, because each plan's `spec.md` states only that plan's delta.
+
+The consequence to hold on to: **a bare `TASK-NNN` does not identify a task.** Every invocation names the plan, and each skill asks when the argument is ambiguous. Inside one plan folder nothing is ambiguous — the spec that defines the requirement, the stage that implements it and the review that checks it all sit under the same `NN-<plan-slug>/`.

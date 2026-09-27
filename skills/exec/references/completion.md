@@ -33,19 +33,19 @@ Discover the runner; never assume it. Look at what the repo declares, then use i
 - **CLI** — invoke the binary with the arguments the criterion names.
 - **Library** — the smallest caller that exercises the changed API; a script in a
   temp directory is fine, and you may remove it after (never leave it in the repo).
-- **No build system at all** — run the thing the README or `docs/plan/CONTEXT.md` says how to run,
+- **No build system at all** — run the thing the README or `context.md` says how to run,
   or the plain interpreter/compiler invocation.
 
-Read `docs/plan/CONTEXT.md` first for the project's own commands — its `Project
+Read `context.md` first for the project's own commands — its `Project
 Rules` section carries the conventions and the commands to run before finishing,
 and a repo that documents `make dev` should not be started with a guess.
 
 Manual smoke is acceptable evidence and often the right one. Record the exact
 command and what it printed; do not describe what it "should" do.
 
-## Validating in a multi-task phase
+## Validating in a multi-task slice
 
-`/exec phase-01` validates each task as it lands, and may run the phase's own
+`/exec NN-<plan-slug>/NN-pK` validates each task as it lands, and may run the slice's own
 smoke path once at the end to confirm the tasks still compose. It does not run
 the project's full test suite to close boxes — that is `/check`'s job, and it owns
 the `Tested` box. The exception is the test a criterion cannot be observed
@@ -58,8 +58,8 @@ is not cosmetic — the code it names does not exist yet, so the task cannot be
 implemented or validated. `/exec` implements the blocker or a different ready
 task, and reports the block rather than working around it.
 
-The same applies at phase level: a phase whose `### BLOCKED BY` names an unlanded
-task or phase cannot be started.
+The same applies at slice level: a slice whose `### BLOCKED BY` names an unlanded
+task or slice cannot be started.
 
 ## The report
 
@@ -107,6 +107,6 @@ Requirements for this report:
 - **Next** — the command that follows.
 
 Report notes (out-of-scope problems found, conventions chosen, deferrable open
-questions inherited from the phase) go after the block, kept short. A note is
+questions inherited from the slice) go after the block, kept short. A note is
 where an unrequested change goes — the box is checked on the task as specified,
 not on the task as improved.

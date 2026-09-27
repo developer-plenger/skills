@@ -1,9 +1,12 @@
 # Check Document
 
-The exact format of `docs/checks/TASK-NNN.md` — the record that proves which
+The exact format of `specs/NN-<plan-slug>/checks/TASK-NNN.md` — the record that proves which
 acceptance criteria were verified, how, and with what result.
 
-One file per task: TASK-003 → `docs/checks/TASK-003.md`.
+One file per task: TASK-003 → `specs/NN-<plan-slug>/checks/TASK-003.md`, inside the plan
+folder that holds the task — `specs/02-monthly-budgets/checks/TASK-003.md`. Task IDs
+restart per plan, so the same filename exists in every plan that has been checked; the
+folder is what makes it unique.
 
 ## Format
 
@@ -43,7 +46,7 @@ One file per task: TASK-003 → `docs/checks/TASK-003.md`.
   hypothesis: the stack frame at src/auth/login.ts:47 is the compare call, and
   the handler has no validation before it.
 
-Hand to `/fix`: `/fix TASK-003`
+Hand to `/fix`: `/fix NN-<plan-slug>/TASK-003`
 
 ## Gaps
 
@@ -64,7 +67,7 @@ Tested: false
   is what lets the next reader audit the choice of command; without it the whole
   record is untrustworthy.
 - **Acceptance Criteria Evidence** — one row per acceptance criterion, copied
-  from the phase file in the task's own order, with columns `Criterion |
+  from the slice file in the task's own order, with columns `Criterion |
   Evidence | Pass/Fail`. Evidence is the command output or the observation, not
   an assertion that it works. A criterion split into several runs gets several
   clauses in its Evidence cell.
@@ -77,7 +80,7 @@ Tested: false
   cannot be exercised here, the environment lacks a dependency. "No gaps"
   when there are genuinely none.
 - **Status** — exactly one line, `Tested: true` or `Tested: false`. It must
-  match the phase file's `Tested` box. See `task-state.md`.
+  match the slice file's `Tested` box. See `task-state.md`.
 
 ## Rules for the verdict
 

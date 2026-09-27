@@ -1,7 +1,7 @@
 # Descriptor for OpenAI-compatible agent runners (Codex, ChatGPT agent mode).
 # Claude Code ignores this file and reads SKILL.md directly.
 name: plan
-description: Turn a raw idea or brief into docs/plan/SPEC.md and docs/plan/CONTEXT.md through critique, targeted questions and recorded decisions.
+description: Create each new plan folder at specs/NN-<plan-slug>/ and write its spec.md through critique, targeted questions and recorded decisions. Every /plan run is a new plan.
 instructions: ../SKILL.md
 model: gpt-5
 tools: [shell, read_file, write_file, apply_patch, search]

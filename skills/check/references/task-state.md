@@ -6,7 +6,7 @@ three skills from disagreeing about task state.
 ## Where state lives
 
 Task state is the three checkboxes in the task block of
-`docs/phases/phase-NN-<slug>.md`:
+`specs/NN-<plan-slug>/slice/NN-pK/tasks.md`:
 
 ```markdown
 ### TASK-003 — Login endpoint
@@ -20,7 +20,7 @@ There is no `status:` field, no YAML block, no separate state file. If you find
 one, it is stale and the checkboxes are the truth.
 
 `DONE` is **derived**, never stored: all three boxes checked. Never write the
-word `DONE` into a phase file.
+word `DONE` into a slice file.
 
 ## Who may flip what
 
@@ -39,7 +39,7 @@ producing the evidence that box asserts.
 ## The transition this skill owns
 
 Flip `- [ ] Tested` to `- [x]` only when **every** acceptance criterion in the
-task block has passing evidence in `docs/checks/TASK-NNN.md`.
+task block has passing evidence in `specs/NN-<plan-slug>/checks/TASK-NNN.md`.
 
 The bar is all-or-nothing:
 
@@ -52,7 +52,7 @@ The bar is all-or-nothing:
   record that the evidence is manual.
 
 Record the same decision in the check doc's Status block: `Tested: true` or
-`Tested: false`. The two must agree; the phase file is the source of truth for
+`Tested: false`. The two must agree; the slice file is the source of truth for
 state, the check doc for evidence.
 
 ## Never clear a box
@@ -73,7 +73,7 @@ Staleness is detected by other skills:
 
 - `/fix` resets `Tested` when its change touched code (see `/fix`'s own
   `task-state.md`).
-- `/check` itself may notice a stale box during a phase sweep — code changed
+- `/check` itself may notice a stale box during a slice sweep — code changed
   after the check file's date — and should say so in the report, re-running
   that task's criteria if asked.
 
@@ -82,32 +82,40 @@ doubt, re-run: the cost is a command, the alternative is a false claim.
 
 ## Locating a task
 
-`TASK-NNN` lives in exactly one file under `docs/phases/`. Find it by grep:
+`TASK-NNN` restarts per plan, so it identifies a task only together with the plan
+folder that holds it. Find it by grepping **the plan you are working in**:
 
 ```
-grep -rn "^### TASK-003" docs/phases
+grep -rn "^### TASK-003" specs/NN-<plan-slug>/slice
 ```
 
-One hit, in a `### TASK-003 — …` heading: proceed. **Two or more hits: stop and
-report.** A duplicated ID means review and check artifacts point at one of several
-tasks, and picking one silently writes state into the wrong place. The fix is a
-`/slice` amendment — renumber the duplicate — not a guess by `/check`.
+One hit, in a `### TASK-003 — …` heading: proceed — the path names the stage.
+**Two or more hits inside one plan: stop and report.** A duplicated ID means review
+and check artifacts point at one of several tasks, and picking one silently writes
+state into the wrong place. The fix is a `/slice` amendment — renumber the
+duplicate — not a guess by `/check`.
+
+Grep the plan folder, not all of `specs/`: the same ID legitimately exists in every
+other plan that has been sliced, so a repository-wide grep returns one hit per plan
+and the rule above would halt a plan with nothing wrong with it. Which plan to
+write into is settled before the grep — each skill's step 2 resolves it, and asks
+when a bare `TASK-NNN` is ambiguous.
 
 The `^### ` anchor is load-bearing, not decoration: an unanchored grep also
 matches every `#### Dependencies` edge and `### BLOCKED BY` reference, so a
 well-formed plan returns several hits for one task and the rule above would halt
 a plan with nothing wrong with it. Only a task heading defines a task.
 
-## Phase sweep
+## Slice sweep
 
-Phase IDs come from the filename: `phase-01-foundation.md` is `phase-01`.
+Slice IDs come from the folder name: `01-p0`.
 
-`/check phase-01` walks the tasks in the order they appear in that file and
+`/check NN-<plan-slug>/NN-pK` walks the tasks in the order they appear in that file and
 writes one check file per task.
 
 - Skip every task whose `Implemented` box is unchecked: there is nothing to
   run. Report each skipped task by ID with the command that would make it
-  checkable (`/exec TASK-NNN`).
+  checkable (`/exec NN-<plan-slug>/TASK-NNN`).
 - A task whose `Reviewed` box is unchecked is still checkable. Review and check
   are siblings of exec, not a chain — nothing about a task's testability
   depends on whether it has been reviewed.

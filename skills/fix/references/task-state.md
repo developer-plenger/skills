@@ -6,7 +6,7 @@ disagreeing about task state.
 ## Where state lives
 
 Task state is the three checkboxes in the task block of
-`docs/phases/phase-NN-<slug>.md`:
+`specs/NN-<plan-slug>/slice/NN-pK/tasks.md`:
 
 ```markdown
 ### TASK-003 — Login endpoint
@@ -20,7 +20,7 @@ There is no `status:` field, no YAML block, no separate state file. If you find
 one, it is stale and the checkboxes are the truth.
 
 `DONE` is **derived**, never stored: all three boxes checked. Never write the
-word `DONE` into a phase file.
+word `DONE` into a slice file.
 
 ## Who may flip what
 
@@ -91,10 +91,10 @@ finding status — the thing that lets the box flip — would never be produced.
 bodies of evidence, so both must run again:
 
 ```text
-/fix TASK-003
+/fix NN-<plan-slug>/TASK-003
   ↓
-/review TASK-003   →  re-confirms findings, flips Reviewed if clean
-/check  TASK-003   →  re-runs criteria, flips Tested if all pass
+/review NN-<plan-slug>/TASK-003   →  re-confirms findings, flips Reviewed if clean
+/check  NN-<plan-slug>/TASK-003   →  re-runs criteria, flips Tested if all pass
 ```
 
 In either order. Report both to the user; do not describe the task as done when
@@ -102,42 +102,50 @@ only one has run.
 
 ## Unfixed findings stay as they are
 
-`/fix TASK-003#FINDING-002` resets boxes based on what *that* fix changed. When
+`/fix NN-<plan-slug>/TASK-003#FINDING-002` resets boxes based on what *that* fix changed. When
 other findings on the same task remain Open, say so in `## Result` and in the
 report: the task's `Reviewed` box would stay `- [ ]` on the next pass anyway,
 and the user needs to know that before running `/review`.
 
 ## Locating a task
 
-`TASK-NNN` lives in exactly one file under `docs/phases/`. Find it by grep:
+`TASK-NNN` restarts per plan, so it identifies a task only together with the plan
+folder that holds it. Find it by grepping **the plan you are working in**:
 
 ```
-grep -rn "^### TASK-003" docs/phases
+grep -rn "^### TASK-003" specs/NN-<plan-slug>/slice
 ```
 
-One hit, in a `### TASK-003 — …` heading: proceed. **Two or more hits: stop and
-report.** A duplicated ID means review and check artifacts point at one of several
-tasks, and picking one silently writes state into the wrong place. The fix is a
-`/slice` amendment — renumber the duplicate — not a guess by `/fix`.
+One hit, in a `### TASK-003 — …` heading: proceed — the path names the stage.
+**Two or more hits inside one plan: stop and report.** A duplicated ID means review
+and check artifacts point at one of several tasks, and picking one silently writes
+state into the wrong place. The fix is a `/slice` amendment — renumber the
+duplicate — not a guess by `/fix`.
+
+Grep the plan folder, not all of `specs/`: the same ID legitimately exists in every
+other plan that has been sliced, so a repository-wide grep returns one hit per plan
+and the rule above would halt a plan with nothing wrong with it. Which plan to
+write into is settled before the grep — each skill's step 2 resolves it, and asks
+when a bare `TASK-NNN` is ambiguous.
 
 The `^### ` anchor is load-bearing, not decoration: an unanchored grep also
 matches every `#### Dependencies` edge and `### BLOCKED BY` reference, so a
 well-formed plan returns several hits for one task and the rule above would halt
 a plan with nothing wrong with it. Only a task heading defines a task.
 
-## Phase sweep
+## Slice sweep
 
-Phase IDs come from the filename: `phase-01-foundation.md` is `phase-01`.
+Slice IDs come from the folder name: `01-p0`.
 
-`/fix phase-01` collects every task in the phase with an open finding or a
+`/fix NN-<plan-slug>/NN-pK` collects every task in the slice with an open finding or a
 recorded failure, then handles them **one task at a time**, and within a task
 one finding at a time.
 
-- Re-read the phase file's task blocks at the start to build the list; the file
+- Re-read the slice file's task blocks at the start to build the list; the file
   may have changed since the finding was written.
 - Never batch edits across tasks: a sweep that edits three files in one pass
   produces a fix record no reader can trace back to individual findings.
 - Reset each task's boxes as its own fixes land, and record them in that task's
-  fix file — not in a phase-level summary.
+  fix file — not in a slice-level summary.
 - Report per task at the end: which findings were remediated, which were not,
   which boxes reset.

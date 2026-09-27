@@ -1,10 +1,12 @@
 # Review Document
 
-The exact format of `docs/reviews/TASK-NNN.md`, the finding lifecycle, and how
+The exact format of `specs/NN-<plan-slug>/reviews/TASK-NNN.md`, the finding lifecycle, and how
 to behave on a second review.
 
 One file per task, at the path the task ID names: TASK-003 →
-`docs/reviews/TASK-003.md`. Findings are numbered inside that file, from
+`specs/NN-<plan-slug>/reviews/TASK-003.md` — `specs/02-monthly-budgets/reviews/TASK-003.md`.
+The folder is the plan's, and since task IDs restart per plan, the folder is what makes
+the filename unique. Findings are numbered inside that file, from
 `FINDING-001`, and referenced from anywhere as `TASK-003#FINDING-001`.
 
 ## Format
@@ -83,7 +85,7 @@ Reviewed: false
   commands run with their result, criteria you traced to code. This is the
   review's evidence, and it is what makes a zero-finding review credible.
 - **Status** — exactly one line, `Reviewed: true` or `Reviewed: false`. It
-  must match the phase file's `Reviewed` box. See `task-state.md` for when
+  must match the slice file's `Reviewed` box. See `task-state.md` for when
   `true` is allowed.
 
 ## Severity
@@ -101,7 +103,7 @@ Open  →  Fixed by /fix  →  re-confirmed by /review
 
 - A finding starts `Status: Open`. Only `/review` writes the review doc, so
   only `/review` writes `Status`.
-- `/fix` records its remediation in `docs/fixes/TASK-NNN.md` and references the
+- `/fix` records its remediation in `specs/NN-<plan-slug>/fixes/TASK-NNN.md` and references the
   finding from there. It does not edit the review doc.
 - On the next `/review` of the same task, check whether each `Open` finding was
   actually remediated. If it was, set `Status: Fixed` and record in

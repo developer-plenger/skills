@@ -1,5 +1,9 @@
 # Check — TASK-001
 
+<!-- Lives at specs/NN-<plan-slug>/checks/TASK-001.md, inside the plan folder that
+     holds the task. Task IDs restart per plan, so the plan folder is what makes
+     this filename unique. -->
+
 ## Environment
 
 - Framework detected: {{the test framework found in this repository}}
@@ -11,7 +15,7 @@
 
 | Criterion | Evidence | Pass/Fail |
 | --- | --- | --- |
-| {{criterion copied from the task}} | {{test name, command output, or direct observation}} | {{Pass or Fail}} |
+| {{criterion copied from the task block}} | {{test name, command output, or direct observation}} | {{Pass or Fail}} |
 
 ## Failures
 
@@ -26,7 +30,7 @@ One entry per failing criterion or test. Output verbatim, then a cause hypothesi
 
 - Cause hypothesis: {{what in the code or configuration would produce this, citing the frame, line, or setting that supports it}}
 
-Hand to `/fix`: `/fix TASK-001`
+Hand to `/fix`: `/fix NN-<plan-slug>/TASK-001`
 
 ## Gaps
 

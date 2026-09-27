@@ -25,7 +25,7 @@ Things to be suspicious of in the idea text:
 
 ## 2. The question bank, by lens
 
-Draw from these when a section of `SPEC.md` would otherwise be blank. Not all apply to every idea; ask the ones that gate a decision.
+Draw from these when a section of `spec.md` would otherwise be blank. Not all apply to every idea; ask the ones that gate a decision.
 
 **Target user**
 
@@ -95,7 +95,7 @@ Draw from these when a section of `SPEC.md` would otherwise be blank. Not all ap
 - **Batch.** One round of questions, not a dialogue. Batch to at most about seven; rank them so the user can stop answering and still leave the spec coherent.
 - **Prioritise.** Ask what changes the shape of the spec, not what changes a detail you can revise later.
 - **Recommend.** Every question carries your default ("we will assume single-tenant unless you say otherwise") so "sounds fine" is a valid fast answer.
-- **Never ask what is already answered** by the idea, the repo, `docs/plan/CONTEXT.md`, or an earlier message. Asking the user something their README states wastes the turn and signals you did not read.
+- **Never ask what is already answered** by the idea, the repo, `context.md`, or an earlier message. Asking the user something their README states wastes the turn and signals you did not read.
 - **Never ask the user to write the requirements.** "Tell me what you want in the spec" is a failure of this skill. Ask closed questions about decisions; synthesise the text yourself.
 - **Record non-answers.** A question the user declines to answer goes to §17 Open Questions together with its recommended default and what changes if the answer differs.
 - **Ask once per decision.** Re-asking in a later step because the answer was inconvenient is how confidence in the spec dies.
@@ -104,8 +104,9 @@ Draw from these when a section of `SPEC.md` would otherwise be blank. Not all ap
 
 When the idea lands on a repo that already exists:
 
-1. Read `AGENTS.md` for the pack contract, then `README`, then the entry points and configuration. `docs/plan/CONTEXT.md` from a prior run, if present, is a shortcut to the project's durable facts — otherwise this run is the one that writes them.
+1. Read `AGENTS.md` for the pack contract, then `context.md` for what this project already holds — the stack, the conventions, and where development stands — then every existing plan's `specs/NN-<plan-slug>/spec.md` when they exist, then `README`, then the entry points and configuration. A `context.md` with filled sections is the project's durable facts; an empty one is a fresh repository, and this run is the one that writes them.
 2. Map what already exists to the idea: what to build on, what to extend, what the idea would break.
-3. Detect the constraints the repo imposes — stack, conventions, migration history, existing tests, deploy pipeline. These become §16 Constraints, and they outrank the idea's imagined stack. The stack and the conventions themselves also go to `CONTEXT.md`'s `Technology` and `Project Rules` sections with their proving file, because `AGENTS.md` no longer carries project facts.
+3. Detect the constraints the repo imposes — stack, conventions, migration history, existing tests, deploy pipeline. These become §16 Constraints, and they outrank the idea's imagined stack. The stack and the conventions themselves also go to `context.md`'s `Technology` and `Project Rules` sections with their proving file, because `AGENTS.md` no longer carries project facts.
+6. When plan folders already exist under `specs/`, read their specs — especially §4, §7, §8 and §9 of the newest two or three, and `plan-01`'s in full — before assuming a requirement is missing. An existing §8 is usually where the answer already lives, and the most common planning failure is specifying a feature an earlier plan already shipped. Each spec states only its own plan's delta, so a request that isn't in `plan-02/spec.md` may still be in `plan-01`'s.
 4. Hunt for the parts of the idea already implemented, and for features present in code but absent from the idea — the second is often a requirement the user forgot to mention.
 5. Questions that remain are about intent, never about facts the code already settles. "The repo uses Postgres; will the new feature share that database?" — the second half is a real question; the first half is not.

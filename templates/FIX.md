@@ -1,5 +1,9 @@
 # Fix — TASK-001
 
+<!-- Lives at specs/NN-<plan-slug>/fixes/TASK-001.md, inside the plan folder that
+     holds the task. Task IDs restart per plan, so the plan folder is what makes
+     this filename unique. -->
+
 ## FINDING-001 — {{short title, using the finding's own identifier from the review doc}}
 
 Root cause: {{the code and line that produces the failure, and the evidence that this is the cause rather than a nearby line — the stack frame, the grep result, the reproduction. If the cause could not be established, write what was ruled out and stop rather than guessing.}}
@@ -36,4 +40,4 @@ Reset:
 
 {{State explicitly any box left checked that a reader might expect to be reset, and why. For example: `Implemented` left checked because the task was implemented and these are defects in it, not missing implementation.}}
 
-Next: `/review TASK-001` and `/check TASK-001`.
+Next: `/review NN-<plan-slug>/TASK-001` and `/check NN-<plan-slug>/TASK-001`.

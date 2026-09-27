@@ -1,7 +1,7 @@
 # Remediation
 
 How to remove the cause of a finding rather than its symptom, how to keep the
-change reviewable, and the exact format of `docs/fixes/TASK-NNN.md`.
+change reviewable, and the exact format of `specs/NN-<plan-slug>/fixes/TASK-NNN.md`.
 
 ## Root cause, not symptom
 
@@ -89,14 +89,16 @@ the actual command or steps:
 - A finding from `/review`: re-run or re-read the scenario in the finding's
   `Problem:` field.
 - A failure from `/check`: re-run the exact command recorded in
-  `docs/checks/TASK-NNN.md`.
+  `specs/NN-<plan-slug>/checks/TASK-NNN.md`.
 
 Record the new output. "Now works" without output is a claim, and `/review`
 cannot re-confirm a claim.
 
-## Format of `docs/fixes/TASK-NNN.md`
+## Format of `specs/NN-<plan-slug>/fixes/TASK-NNN.md`
 
-One file per task, at the path its ID names: TASK-003 → `docs/fixes/TASK-003.md`.
+One file per task, at the path its ID names: TASK-003 → `specs/NN-<plan-slug>/fixes/TASK-003.md`,
+inside the plan folder that holds the task. Task IDs restart per plan, so the folder is
+what makes the filename unique.
 
 ```markdown
 # Fix — TASK-003
@@ -144,13 +146,13 @@ Verification:
 Reset:
 - `- [ ] Reviewed` — code changed in src/auth/credentials.ts, login.ts,
   reset.ts; the previous review judged code that no longer exists.
-- `- [ ] Tested` — the criterion-2 evidence in docs/checks/TASK-003.md was
+- `- [ ] Tested` — the criterion-2 evidence in specs/NN-<plan-slug>/checks/TASK-003.md was
   captured against the old response body.
 
 `Implemented` left checked: the task was implemented; these are defects in it,
 not missing implementation.
 
-Next: `/review TASK-003` and `/check TASK-003`.
+Next: `/review NN-<plan-slug>/TASK-003` and `/check NN-<plan-slug>/TASK-003`.
 ```
 
 ### Field rules
@@ -174,7 +176,7 @@ Next: `/review TASK-003` and `/check TASK-003`.
 
 ## Reference so `/review` can close the finding
 
-`/fix` does not edit `docs/reviews/TASK-NNN.md`. It records the remediation
+`/fix` does not edit `specs/NN-<plan-slug>/reviews/TASK-NNN.md`. It records the remediation
 here, referencing the finding's identifier, and reports the task as back in
 review. `/review` then reads this file, checks the verification against the code
 as it now stands, and marks the finding `Fixed` — that re-confirmation is what
