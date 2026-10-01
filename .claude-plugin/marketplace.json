@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "developer-plenger",
-      "description": "Seven skills that carry a project from idea to reviewed, tested, done — one plan folder at a time: init, plan, slice, exec, review, check, fix.",
+      "description": "Eight skills that carry a project from idea to reviewed, tested, done — one plan folder at a time: init, plan, design, slice, exec, review, check, fix.",
       "source": "./",
       "category": "development"
     }

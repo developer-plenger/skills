@@ -78,7 +78,7 @@ Completion criterion: the slice file's `Reviewed` box matches the Status block i
 
 ## 8. Update context.md
 
-Set `Current Phase` to `REVIEW` — the field holds exactly one of the seven step names (`INIT`, `PLAN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX`), with no task ID, no plan name, no stage name and no free text.
+Set `Current Phase` to `REVIEW` — the field holds exactly one of the eight step names (`INIT`, `PLAN`, `DESIGN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX`), with no task ID, no plan name, no stage name and no free text.
 
 A review flips the `Reviewed` box, and that can be the box that makes a stage `DONE` — so update the state slot of this plan's line in `Current Development Status` when it did, and leave it alone when it did not. `p0 ✓` means every task in that stage has all three boxes checked, which is the stage's state, not the review's. Leave the summary clause alone: you flip a box, you do not restate what the plan builds. Never touch another plan's line.
 

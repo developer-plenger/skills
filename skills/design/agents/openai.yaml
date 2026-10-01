@@ -1,7 +1,7 @@
 # Descriptor for OpenAI-compatible agent runners (Codex, ChatGPT agent mode).
 # Claude Code ignores this file and reads SKILL.md directly.
-name: exec
-description: Implement planned tasks from one plan's slice/NN-pK/tasks.md and check the Implemented box when the code runs; a UI task is blocked until design.md exists.
+name: design
+description: Fetch design guidance tuned to the app's stack and write the app-wide design.md, or a not-applicable stub; /exec blocks UI until it exists.
 instructions: ../SKILL.md
 model: gpt-5
 tools: [shell, read_file, write_file, apply_patch, search]

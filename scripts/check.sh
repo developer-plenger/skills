@@ -37,10 +37,11 @@ echo "4. every references/ link a SKILL.md makes exists"
 python3 scripts/lib/reference_links.py || fail=1
 
 echo "5. artifact shape counts"
-[ "$(rg -c '^## ' templates/CONTEXT.md)" = 13 ] && ok "context.md has 13 sections" || err "context.md section count changed"
+[ "$(rg -c '^## ' templates/CONTEXT.md)" = 14 ] && ok "context.md has 14 sections" || err "context.md section count changed"
 [ "$(rg -c '^## [0-9]+\.' templates/SPEC.md)" = 19 ] && ok "spec.md has 19 sections" || err "spec.md section count changed"
-[ "$(rg -c '^### ' skills/init/references/agents-template.md)" -ge 7 ] && ok "all seven skills registered in the contract" || err "a skill is missing from the AGENTS.md contract"
-[ "$(ls templates/*.md | wc -l | tr -d ' ')" = 7 ] && ok "seven templates" || err "template count changed"
+[ "$(rg -c '^## ' templates/DESIGN.md)" = 10 ] && ok "design.md has 10 sections" || err "design.md section count changed"
+[ "$(rg -c '^### ' skills/init/references/agents-template.md)" -ge 8 ] && ok "all eight skills registered in the contract" || err "a skill is missing from the AGENTS.md contract"
+[ "$(ls templates/*.md | wc -l | tr -d ' ')" = 8 ] && ok "eight templates" || err "template count changed"
 
 echo "6. no retired layout vocabulary left behind"
 # Two retired models, both of which would silently corrupt every path:

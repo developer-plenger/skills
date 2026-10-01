@@ -1,6 +1,6 @@
 # developer-plenger/skills
 
-An end-to-end, spec-driven development workflow shipped as one Claude Code plugin. Seven skills carry a project from a sentence-long idea to code that is implemented, reviewed, and tested: `init` registers the skill pack and creates the empty repository index, `plan` writes one plan's specification, `slice` cuts that spec into development stages, `exec` writes the code, `review` audits it against the spec, `check` proves it with tests, and `fix` repairs what review and check surface. Every hand-off is a file in the repository — `AGENTS.md`, `context.md`, `specs/02-monthly-budgets/spec.md`, `specs/02-monthly-budgets/slice/01-p0/tasks.md` and the rest — so progress survives the session and is visible in a diff.
+An end-to-end, spec-driven development workflow shipped as one Claude Code plugin. Eight skills carry a project from a sentence-long idea to code that is implemented, reviewed, and tested: `init` registers the skill pack and creates the empty repository index, `plan` writes one plan's specification, `design` fetches the design system every UI task obeys, `slice` cuts that spec into development stages, `exec` writes the code, `review` audits it against the spec, `check` proves it with tests, and `fix` repairs what review and check surface. Every hand-off is a file in the repository — `AGENTS.md`, `context.md`, `design.md`, `specs/02-monthly-budgets/spec.md`, `specs/02-monthly-budgets/slice/01-p0/tasks.md` and the rest — so progress survives the session and is visible in a diff.
 
 **Every `/plan` run gets its own folder.** `specs/01-<plan-slug>/` is the initial build, `specs/02-<plan-slug>/` the next feature, `specs/03-<plan-slug>/` the one after. Each folder is self-contained: its own `spec.md` stating what that plan builds, its own `slice/` folder holding its development stages starting at `p0`, its own `TASK-001`, and its own reviews, checks and fixes. A later `/plan` never edits an earlier plan's spec — plans are history, and a correction is the next plan rather than an edit to the last one.
 
@@ -16,13 +16,15 @@ What spans them is `context.md` at the root. Its `Current Development Status` ca
 
 That is why a fresh agent in any harness reads one file and knows both **what the project does** and **where it stands** — plan 01 was the initial build, plan 02 added budgets, plan 03 is queued — without opening a single spec. `/plan` writes each line's summary clause; `/slice` and the four later skills keep only the state slots current. Depth lives in [docs/workflow.md](docs/workflow.md), [docs/architecture.md](docs/architecture.md), and [docs/state-machine.md](docs/state-machine.md).
 
+`design.md` at the root is the one artifact that spans the plans the way `context.md` does: a single app-wide design system, written by `design` between `plan` and `slice`, that every UI task in `exec` follows. Where every other artifact belongs to one plan, `design.md` belongs to the app.
+
 ## Flow
 
 ```text
-  INIT     -> PLAN         -> SLICE        -> EXEC -> (REVIEW || CHECK) -> FIX -> (REVIEW || CHECK)
- AGENTS.md   creates         fills that      CODE      findings            code     both again
- context.md  specs/NN-slug/  plan's
-             spec.md         slice/NN-pK/
+  INIT     -> PLAN         -> DESIGN       -> SLICE        -> EXEC -> (REVIEW || CHECK) -> FIX -> (REVIEW || CHECK)
+ AGENTS.md   creates         app-wide         fills that      CODE      findings            code     both again
+ context.md  specs/NN-slug/  design.md        plan's
+             spec.md         (or a stub)      slice/NN-pK/
              (a later feature re-enters PLAN and creates the NEXT folder —
               it never edits the one that already exists)
 
@@ -40,6 +42,7 @@ REVIEW and CHECK are parallel siblings. `exec -> review` and `exec -> check`, ne
 | --- | --- | --- | --- | --- |
 | init | `/developer-plenger:init` | any existing `AGENTS.md`, `context.md` | `AGENTS.md`, an empty `context.md` | — |
 | plan | `/developer-plenger:plan <idea>` | your idea in prose, `context.md`, every existing plan's `spec.md`, and the code | `specs/NN-<plan-slug>/spec.md` — a **new** plan folder — and the project's sections in `context.md` | — |
+| design | `/developer-plenger:design` | `context.md`, the newest plan's `spec.md`, the existing `design.md` | `design.md` at the repo root — the app-wide design system, or a `not applicable` stub | — |
 | slice | `/developer-plenger:slice NN-<plan-slug>` | `specs/NN-<plan-slug>/spec.md`, `context.md` | that plan's `slice/NN-pK/tasks.md`, starting at `01-p0` | — |
 | exec | `/developer-plenger:exec NN-<plan-slug>/NN-pK` | the slice file, that plan's `spec.md`, `context.md`, source | application source code | `Implemented` |
 | review | `/developer-plenger:review NN-<plan-slug>/NN-pK` | task, that plan's spec, acceptance criteria, code | `specs/NN-<plan-slug>/reviews/TASK-NNN.md` | `Reviewed` |
@@ -47,6 +50,8 @@ REVIEW and CHECK are parallel siblings. `exec -> review` and `exec -> check`, ne
 | fix | `/developer-plenger:fix NN-<plan-slug>/TASK-001#FINDING-002` | a review or check document | repaired source code, `specs/NN-<plan-slug>/fixes/TASK-NNN.md` | resets invalidated boxes |
 
 `/developer-plenger:init` asks the user nothing: `AGENTS.md` describes the pack, not the project, so it is identical in every repository, and the `context.md` it creates is empty because nothing has been planned yet. Project facts — the stack, the conventions, the purpose — and each plan's spec are written by `/developer-plenger:plan`. Running `/developer-plenger:plan` again creates the next plan folder; it never touches the plans that exist.
+
+`/developer-plenger:design` writes one file for the whole app, not one per plan: `design.md` at the root. Running it again after a later plan extends that file in place if the feature adds UI, and changes nothing if it does not. `/developer-plenger:exec` refuses a UI task until `design.md` exists, so the design system cannot be skipped.
 
 Task and stage IDs restart inside each plan folder, so every invocation that names a task carries the plan. That is the one cost of the structure, and it buys a plan that reads and works entirely on its own.
 
@@ -57,7 +62,8 @@ Task and stage IDs restart inside each plan folder, so every invocation that nam
 | Artifact | Written by | Location |
 | --- | --- | --- |
 | Pack registration | `/developer-plenger:init` | `AGENTS.md` |
-| Project context | `/developer-plenger:init` creates it empty; `/developer-plenger:plan` fills its sections and adds a status line per plan; the five later skills keep that status section current and move the cursor | `context.md` |
+| Project context | `/developer-plenger:init` creates it empty; `/developer-plenger:plan` fills its sections and adds a status line per plan; `/developer-plenger:design` writes its `## Design` pointer; the later skills keep the status section current and move the cursor | `context.md` |
+| Design system | `/developer-plenger:design` | `design.md` |
 | Specification | `/developer-plenger:plan` | `specs/NN-<plan-slug>/spec.md` |
 | Stage plan | `/developer-plenger:slice` | `specs/NN-<plan-slug>/slice/NN-pK/tasks.md` |
 | Review | `/developer-plenger:review` | `specs/NN-<plan-slug>/reviews/TASK-NNN.md` |
@@ -88,19 +94,20 @@ The Claude Code flow:
 /plugin install developer-plenger
 ```
 
-Then run `/plugin` to confirm the plugin is listed and enabled. The seven skills become available as `/developer-plenger:init`, `/developer-plenger:plan`, `/developer-plenger:slice`, `/developer-plenger:exec`, `/developer-plenger:review`, `/developer-plenger:check`, and `/developer-plenger:fix`. Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all seven.
+Then run `/plugin` to confirm the plugin is listed and enabled. The eight skills become available as `/developer-plenger:init`, `/developer-plenger:plan`, `/developer-plenger:design`, `/developer-plenger:slice`, `/developer-plenger:exec`, `/developer-plenger:review`, `/developer-plenger:check`, and `/developer-plenger:fix`. Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all eight.
 
 ## Use it on a project
 
 1. `/developer-plenger:init` — register the pack; the agent writes `AGENTS.md` and an empty `context.md`, and asks nothing.
 2. `/developer-plenger:plan` — describe the idea; the agent asks its questions, records the stack and the repository's conventions, and creates `specs/01-initial-build/spec.md`, adding the project's sections and this plan's ledger line to `context.md`.
-3. `/developer-plenger:slice 01-initial-build` — cut the spec into `specs/01-initial-build/slice/01-p0/tasks.md` and the following stages, with tasks and acceptance criteria.
-4. `/developer-plenger:exec 01-initial-build/01-p0` — implement the tasks, dependencies first; `Implemented` flips as the code runs.
-5. `/developer-plenger:review 01-initial-build/01-p0` and `/developer-plenger:check 01-initial-build/01-p0` — run both, in either order; then `/developer-plenger:fix` on what they surface.
+3. `/developer-plenger:design` — the agent proposes a design system for the stack, fetches its current guidance, and writes `design.md` at the root, or a `not applicable` stub if the project has no UI.
+4. `/developer-plenger:slice 01-initial-build` — cut the spec into `specs/01-initial-build/slice/01-p0/tasks.md` and the following stages, with tasks and acceptance criteria.
+5. `/developer-plenger:exec 01-initial-build/01-p0` — implement the tasks, dependencies first; `Implemented` flips as the code runs.
+6. `/developer-plenger:review 01-initial-build/01-p0` and `/developer-plenger:check 01-initial-build/01-p0` — run both, in either order; then `/developer-plenger:fix` on what they surface.
 
-Repeat step 5 until every box in the stage is checked, then move to the next stage number.
+Repeat step 6 until every box in the stage is checked, then move to the next stage number.
 
-**When the app gains a feature**, go back to step 2 and run `/developer-plenger:plan` again. The agent creates `specs/02-<plan-slug>/` — a new spec stating only what this feature adds, what already existed and was reused, and the decisions it took — and adds a second ledger line to `context.md`. Then `/developer-plenger:slice 02-<plan-slug>` gives it its own `01-p0` and its own `TASK-001`, and work proceeds exactly as before. The first plan folder is untouched throughout. The hand-offs are spelled out in [docs/workflow.md](docs/workflow.md).
+**When the app gains a feature**, go back to step 2 and run `/developer-plenger:plan` again. The agent creates `specs/02-<plan-slug>/` — a new spec stating only what this feature adds, what already existed and was reused, and the decisions it took — and adds a second ledger line to `context.md`. Then `/developer-plenger:design` extends `design.md` if the feature adds UI, `/developer-plenger:slice 02-<plan-slug>` gives it its own `01-p0` and its own `TASK-001`, and work proceeds exactly as before. The first plan folder is untouched throughout. The hand-offs are spelled out in [docs/workflow.md](docs/workflow.md).
 
 ## Agent Runner Descriptors
 
@@ -136,6 +143,12 @@ developer-plenger/skills/
 │   │       ├── evaluation.md
 │   │       ├── specification.md
 │   │       └── context.md
+│   ├── design/
+│   │   ├── SKILL.md
+│   │   ├── agents/openai.yaml
+│   │   └── references/
+│   │       ├── design-format.md
+│   │       └── sourcing.md
 │   ├── slice/
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
@@ -150,6 +163,7 @@ developer-plenger/skills/
 │   │   └── references/
 │   │       ├── implementation.md
 │   │       ├── completion.md
+│   │       ├── design-gate.md
 │   │       └── task-state.md
 │   ├── review/
 │   │   ├── SKILL.md
@@ -175,6 +189,7 @@ developer-plenger/skills/
 │   ├── AGENTS.md
 │   ├── SPEC.md
 │   ├── CONTEXT.md
+│   ├── DESIGN.md
 │   ├── TASKS.md
 │   ├── REVIEW.md
 │   ├── CHECK.md
@@ -194,7 +209,7 @@ developer-plenger/skills/
 
 ## templates/ versus references/
 
-`templates/` holds seven copy-paste seeds — `AGENTS.md`, `SPEC.md`, `CONTEXT.md`, `TASKS.md`, `REVIEW.md`, `CHECK.md`, and `FIX.md` — one per artifact the pack produces. They mirror the skeletons also described in the skills' `references/`. The references are normative: they are what the agent loads at runtime. `templates/` exists so a human can see the shape of a plan's `spec.md`, a stage's `tasks.md`, or `specs/NN-<plan-slug>/fixes/TASK-NNN.md` without running anything. Six of the seven are skeletons with placeholders; `AGENTS.md` is the exception — its content is fixed pack contract with nothing to fill in, which is also why `scripts/check.sh` compares it byte-for-byte against the reference. If the two ever diverge elsewhere, the `references/` files win. See [docs/architecture.md](docs/architecture.md).
+`templates/` holds eight copy-paste seeds — `AGENTS.md`, `SPEC.md`, `CONTEXT.md`, `DESIGN.md`, `TASKS.md`, `REVIEW.md`, `CHECK.md`, and `FIX.md` — one per artifact the pack produces. They mirror the skeletons also described in the skills' `references/`. The references are normative: they are what the agent loads at runtime. `templates/` exists so a human can see the shape of a plan's `spec.md`, the app-wide `design.md`, a stage's `tasks.md`, or `specs/NN-<plan-slug>/fixes/TASK-NNN.md` without running anything. Seven of the eight are skeletons with placeholders; `AGENTS.md` is the exception — its content is fixed pack contract with nothing to fill in, which is also why `scripts/check.sh` compares it byte-for-byte against the reference. If the two ever diverge elsewhere, the `references/` files win. See [docs/architecture.md](docs/architecture.md).
 
 ## Development
 
@@ -210,7 +225,7 @@ It needs only `git`, `grep` and `python3`, and it fails on the five ways this pa
 2. `templates/AGENTS.md` drifting from the canonical text in `skills/init/references/agents-template.md` (the two exist for different readers, so the obvious way to update one is to forget the other);
 3. a retired path — `docs/plan/`, `docs/phases/`, `phase-NN-<slug>` — reappearing in a skill, a template, a manifest or `docs/` (the README is exempt: this section names them on purpose);
 4. a `SKILL.md` linking a `references/*.md` that does not exist;
-5. an artifact shape changing size: `context.md` losing a section, `spec.md` losing a section, a skill disappearing from the contract, a template vanishing;
+5. an artifact shape changing size: `context.md` losing a section, `spec.md` or `design.md` losing a section, a skill disappearing from the contract, a template vanishing;
 6. retired-layout vocabulary reappearing — `<NN-slug>`, `## Apps`, `Current Position`, `plans/plan-NN` — which means the design drifted back to one of the two earlier models: many app folders sharing one spec, or one spec amended in place by every plan.
 
 Run it after any change to a skill, a template or a doc.

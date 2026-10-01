@@ -10,7 +10,7 @@ The budget is one screen, counted rather than estimated: non-blank lines that ar
 
 When the file outgrows the budget, cut the least durable line. Never raise the budget. This is a trim trigger, not a hard cap: a genuinely dense project may sit above 60 honestly, provided every line still earns its place — but a file that needs 90 has turned into a changelog.
 
-## The 13 sections, in order
+## The 14 sections, in order
 
 ```markdown
 # Project Context
@@ -24,6 +24,7 @@ When the file outgrows the budget, cut the least durable line. Never raise the b
 ## Architecture
 ## Technology
 ## Project Rules
+## Design
 ## Current Development Status
 ## Important Decisions
 ## Known Constraints
@@ -41,10 +42,11 @@ When the file outgrows the budget, cut the least durable line. Never raise the b
 | Architecture | The shape: components, boundaries, data stores, external services. | 3–6 lines |
 | Technology | The stack, one line per layer: language, framework, package manager, test runner, build tooling, database, deployment. Each entry names the file that proves it. | one line per layer |
 | Project Rules | This project's own conventions: branching, commit style, formatting, the commands to run before finishing — anything a skill needs that the pack's `AGENTS.md` does not carry. Facts backed by the repo or given by the user. | a few bullets |
+| Design | A one-line pointer to the app-wide `design.md`: its applicability (UI or not applicable) and what it covers. Written by `/design`, not `/plan`. | 1 line |
 | Current Development Status | The plan ledger and the project's actual state: one line per plan giving its identity, what it builds (compressed from that plan's `spec.md`), and its stage states — then the repository-wide task count. | 2–10 lines |
 | Important Decisions | Decisions taken, each with its reason, one line each. Do not reopen these. | a few lines |
 | Known Constraints | Hard limits: budget, deadline, compliance, existing systems. | a few bullets |
-| Current Phase | One of the seven step names `INIT`, `PLAN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX` — written by the skill that just ran, as its own name. No task ID, no free text. | one word |
+| Current Phase | One of the eight step names `INIT`, `PLAN`, `DESIGN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX` — written by the skill that just ran, as its own name. No task ID, no free text. | one word |
 
 ## Current Development Status is the plan ledger
 
@@ -111,12 +113,13 @@ What does not earn a line: task-level detail, anything already in a slice file, 
 - **Never let it become a changelog.** No dates except on decisions, no "previously we did X" narration, no per-task notes. If a change matters, the section now says the new truth and the task's own artifact carries the history.
 - **`Core Features`, `User Flow` and `Important Business Rules` grow with `/plan`.** A later `/plan` that adds a feature adds to these sections rather than rewriting them, because the older features are still true. Everything else is rewritten in place.
 - **`Current Development Status` is kept current by every skill that moves a box.** `/plan` adds the new plan's line — identity, `not sliced yet`, and the summary of what that plan builds — and `/slice` fills in the stage states. `/exec`, `/review`, `/check` and `/fix` update that plan's stage states and the task count. This is the one section besides `Current Phase` that is not `/plan`-owned, and `Current Development Status` is the only place `/slice` and the four later skills are allowed to write prose: they touch the state slot, never the summary clause.
-- **`Current Phase` reflects where the chain is, and after a skill runs that is the step it just completed — so every skill writes its own name.** `/init` writes `INIT`, `/plan` writes `PLAN`, `/slice` writes `SLICE`, `/exec` writes `EXEC`, `/review` writes `REVIEW`, `/check` writes `CHECK`, `/fix` writes `FIX`. The value is always exactly one of the seven names, so a parser can match it — never append a task ID, a note, or a "back to" clause. Which slice was being worked on goes in your report, not in this field.
+- **`## Design` is `/design`-owned, not `/plan`'s.** It is a one-line pointer to the app-wide `design.md` and its applicability; `/design` writes it and rewrites it in place on a later run. `/plan` writes it as `unknown` and leaves it for `/design`, exactly as it leaves the plan specs' UI to `/design`. It is the only project section `/plan` does not own.
+- **`Current Phase` reflects where the chain is, and after a skill runs that is the step it just completed — so every skill writes its own name.** `/init` writes `INIT`, `/plan` writes `PLAN`, `/design` writes `DESIGN`, `/slice` writes `SLICE`, `/exec` writes `EXEC`, `/review` writes `REVIEW`, `/check` writes `CHECK`, `/fix` writes `FIX`. The value is always exactly one of the eight names, so a parser can match it — never append a task ID, a note, or a "back to" clause. Which slice was being worked on goes in your report, not in this field.
 - **Trim on write.** When an edit pushes the file past the counted budget, the same edit removes the least durable line.
 
 ## At the end of /init
 
-Create the file if it is absent, with all 13 sections present and empty, and the cursor set:
+Create the file if it is absent, with all 14 sections present and empty, and the cursor set:
 
 ```markdown
 # Project Context
@@ -139,6 +142,8 @@ Create the file if it is absent, with all 13 sections present and empty, and the
 
 ## Project Rules
 
+## Design
+
 ## Current Development Status
 
 ## Important Decisions
@@ -154,7 +159,7 @@ INIT
 
 ## At the end of /plan
 
-On `plan-01`, fill all 13 sections from the spec and the stack-and-conventions discovery, each `Technology` and `Project Rules` entry naming its proving file or the answer that supplied it — a repository that proves neither gets `unknown`, never a guess.
+On `plan-01`, fill 13 of the 14 sections from the spec and the stack-and-conventions discovery, each `Technology` and `Project Rules` entry naming its proving file or the answer that supplied it — a repository that proves neither gets `unknown`, never a guess. Leave `## Design` as `unknown`; it belongs to `/design`, the run that follows this one.
 
 Every later `/plan` adds rather than replaces, because the earlier plans are still true:
 
@@ -168,6 +173,7 @@ Set `Current Phase` to `PLAN`, and create nothing under `specs/NN-<plan-slug>/` 
 
 Set `Current Phase` to the step that just ran.
 
+- `/design` writes `## Design` — the pointer to the app-wide `design.md` and its applicability — and changes nothing else in the file.
 - `/slice` replaces that plan's `not sliced yet` with the stages it produced, touching the state slot only: `plan-02 — monthly budgets — p0 pending | p1 pending — a budget per category, and spending shown against it`.
 - `/exec`, `/review`, `/check` and `/fix` update that plan's stage states and the repository-wide task count.
 

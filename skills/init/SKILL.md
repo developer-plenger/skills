@@ -15,7 +15,7 @@ description: >
 `/init` writes two files at the repo root so every later skill knows which skills exist, what each one produces, where each artifact lives, and what the project currently is:
 
 - `AGENTS.md` — the pack contract. Identical in every project; it is the pack's rules, not a description of the project.
-- `context.md` — the project's memory, created **empty**: thirteen sections and nothing in them, because nothing has been planned yet and `/init` inspects nothing.
+- `context.md` — the project's memory, created **empty**: fourteen sections and nothing in them, because nothing has been planned yet and `/init` inspects nothing.
 
 The run is: read what exists, compare it against the contract, write if it does not conform, report. `/init` asks the user nothing — there is no project-specific content to gather. It never inspects the codebase to infer a stack, a purpose or an architecture; those are project facts and belong to `/plan`, which records them in `context.md` and in `specs/NN-<plan-slug>/spec.md`.
 
@@ -70,12 +70,12 @@ symlink or a short pointer. If it does not exist, do nothing here.
 
 Follow `skills/plan/references/context.md` for the exact shape.
 
-- **Absent** — write the thirteen sections, all empty, with `Current Phase` set to `INIT`. Empty means blank, not `unknown`: `/plan` is the run that fills this file, and a placeholder here invites a later skill to treat a guess as a fact.
+- **Absent** — write the fourteen sections, all empty, with `Current Phase` set to `INIT`. Empty means blank, not `unknown`: `/plan` is the run that fills this file, and a placeholder here invites a later skill to treat a guess as a fact.
 - **Present** — set `Current Phase` to `INIT` and change nothing else. The project's facts belong to `/plan`.
 
 Create no directory here. `specs/` is created by `/plan`, and a fresh clone should have no `specs/` tree until a plan is actually written.
 
-**Done when:** `context.md` exists with the thirteen sections and `Current Phase: INIT`, or was already present with only its cursor changed.
+**Done when:** `context.md` exists with the fourteen sections and `Current Phase: INIT`, or was already present with only its cursor changed.
 
 ### 6. Report
 

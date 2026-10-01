@@ -6,7 +6,7 @@ description: >
   NN-<plan-slug>/NN-pK, which is the normal form, or /exec TASK-001 when the
   task ID is unambiguous. Reads AGENTS.md and context.md, checks dependencies,
   and reports blocks instead of implementing a task whose dependencies are
-  unchecked.
+  unchecked. Refuses a UI task until the app-wide design.md exists.
 ---
 
 # /exec
@@ -28,7 +28,19 @@ If `AGENTS.md` is missing, stop and send the user to `/init`. If `context.md` is
 
 **Done when:** you have named the plan, and you have the slice file's task list or know which task(s) the invocation selects.
 
-## 2. Identify the task
+## 2. Check the design gate
+
+Read `references/design-gate.md`. Before reading any source file, confirm the app has a `design.md` at the repo root, and — when the selected task is UI — that it applies.
+
+- **`design.md` missing — block, always.** Report the block and send the user to `/design`; implement nothing.
+- **`design.md` present but `## Applicability` is `not applicable` while this task is UI — block**, and send them to `/design`.
+- **Present and applicable, or the task is non-UI — pass.** On a UI task, read the sections the task uses (Colors / Tokens, Typography, Spacing & Radius, Components, States, Accessibility) and implement against them, not against preference.
+
+Classify UI vs non-UI from the task's acceptance criteria and the plan `spec.md` sections it descends from, using `references/design-gate.md`. When the signals conflict or the stack is `unknown`, ask the user once rather than guess-blocking a backend task.
+
+**Done when:** the gate is open (or the task is non-UI), or you blocked with the `/design` pointer and the reason.
+
+## 3. Identify the task
 
 Within the chosen plan, `/exec NN-<plan-slug>/NN-pK` selects that stage's tasks in dependency order, and `/exec NN-<plan-slug>/TASK-NNN` selects one task. A plan argument with no stage selects the lowest-numbered stage that still has unchecked tasks, and you say which one you picked before starting.
 
@@ -36,37 +48,37 @@ Confirm the ID appears as a `### TASK-NNN` heading in exactly one file *under th
 
 **Done when:** the selected task(s), their stage and their slice file are identified, or you stopped with a duplicate-ID report.
 
-## 3. Check dependencies
+## 4. Check dependencies
 
 If the task's `#### Dependencies` lists anything, or its slice's `### BLOCKED BY` names an unlanded task or stage, the task is BLOCKED. Report it and implement the blocker or a different ready task instead — a blocked task cannot be validated even if its code would look right.
 
 **Done when:** every selected task is either unblocked or reported blocked with the specific unchecked dependency named.
 
-## 4. Inspect before writing
+## 5. Inspect before writing
 
 Read `references/implementation.md`. Find the code the task touches: search for the existing feature, follow the pattern already in the repo, reuse existing helpers before adding new ones. Never open a guessed file path. On a later plan the feature may already be half-built by an earlier one — search before writing, because re-implementing what plan 01 already shipped is the most common way a new plan wastes its budget.
 
 **Done when:** you can name the files you will change, the pattern you will follow, and the existing helpers you will reuse.
 
-## 5. Implement
+## 6. Implement
 
 Same reference. The description and acceptance criteria are the whole scope; a needed-but-unrequested change becomes a note in the report, not an edit. Smallest coherent change, no drive-by refactors, respect the project's conventions over personal preference.
 
 **Done when:** the change is complete against the description and criteria.
 
-## 6. Validate
+## 7. Validate
 
 Read `references/completion.md`. The changed path must actually run — build it, start it, invoke it, and observe the result. "It compiles" is not done.
 
 **Done when:** you have a command whose output you observed, and that command is recorded in the report.
 
-## 7. Update the state
+## 8. Update the state
 
 Read `references/task-state.md` and read the slice file before editing it. Flip only `- [ ] Implemented` to `- [x]` for the task whose code ran. Leave `Reviewed` and `Tested` alone; pre-checking them makes `/review` and `/check` look like they already ran. Reset `Implemented` to unchecked if a later change in this session invalidates the implementation.
 
 **Done when:** the box matches the truth for this task and nothing else in the slice file changed.
 
-## 8. Recommend the check, don't decide it
+## 9. Recommend the check, don't decide it
 
 Say which case you hit:
 
@@ -82,9 +94,9 @@ one-task box. Testing is `/check`'s job, and it owns the `Tested` box.
 
 **Done when:** the report names the case and the next command.
 
-## 9. Update `context.md`
+## 10. Update `context.md`
 
-Set `Current Phase` to `EXEC` — the field holds exactly one of the seven step names (`INIT`, `PLAN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX`), with no task ID, no plan name, no stage name and no free text; the task, plan and stage belong in your report, not in that field.
+Set `Current Phase` to `EXEC` — the field holds exactly one of the eight step names (`INIT`, `PLAN`, `DESIGN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX`), with no task ID, no plan name, no stage name and no free text; the task, plan and stage belong in your report, not in that field.
 
 Then update the line for **the plan you worked in** in `Current Development Status`: that stage's state, and the repository-wide task count. Condense a finished prefix into a range once the plan has more than roughly eight stages — `p0–p5 ✓ | p6 in progress | p7 pending`.
 
@@ -92,7 +104,7 @@ The line has a summary clause naming what the plan builds. Leave it alone: you f
 
 **Done when:** the cursor names the step that ran, this plan's ledger line reflects the boxes you flipped, and no other plan's line changed.
 
-## 10. Report
+## 11. Report
 
 Use the report format in `references/completion.md`: task ID, files touched, what
 you ran and what it printed, criteria met, criteria left for `/check`, blockers.

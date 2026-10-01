@@ -26,7 +26,7 @@ Two consequences, and they define this skill:
   anchor them to. Detection here would produce exactly the project description
   this file is meant to stop carrying.
 
-This reference covers `AGENTS.md` only. The `context.md` shape — its thirteen
+This reference covers `AGENTS.md` only. The `context.md` shape — its fourteen
 sections, `Current Development Status` as the plan ledger, and the update
 discipline every skill follows — is in `skills/plan/references/context.md`, and
 step 5 of `SKILL.md` applies it.
@@ -51,15 +51,16 @@ the purpose — live in `context.md`, written by `/developer-plenger:plan`.
 The registered chain is:
 
 ```text
-INIT → PLAN → SLICE → EXEC → (REVIEW ∥ CHECK) → FIX
+INIT → PLAN → DESIGN → SLICE → EXEC → (REVIEW ∥ CHECK) → FIX
 ```
 
 - REVIEW and CHECK are siblings of EXEC, never a chain: the edges are `exec → review` and `exec → check`, never `exec → review → check`. Either may run first, either may run without the other, and both may run on the same task.
 - CHECK runs per finished slice by default, plus whenever a single task needs a test result before anyone can trust it.
 - PLAN runs once per plan: every run creates `specs/NN-<plan-slug>/` with its own `spec.md` and its own `slice/` folder. The first run is the initial build; every later run is a feature or a change of requirements. Plans accumulate; none of them is edited by a later one.
+- DESIGN runs once per plan, between PLAN and SLICE: it writes the app-wide `design.md` at the repo root — the design system every UI task obeys — or a `not applicable` stub for a project with no UI. `/exec` refuses a UI task until `design.md` exists.
 - FIX repairs what review and check surfaced, then resets the checkboxes its change invalidated.
 
-Invoke with `/developer-plenger:init`, `/developer-plenger:plan`, `/developer-plenger:slice NN-<plan-slug>`, `/developer-plenger:exec NN-<plan-slug>/NN-pK`, `/developer-plenger:review NN-<plan-slug>/NN-pK`, `/developer-plenger:check NN-<plan-slug>/NN-pK`, `/developer-plenger:fix NN-<plan-slug>/NN-pK` — or `TASK-NNN` in place of `NN-pK` to target one task. Task and stage IDs restart per plan, so the plan folder is part of every invocation that names a task. Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all seven.
+Invoke with `/developer-plenger:init`, `/developer-plenger:plan`, `/developer-plenger:design`, `/developer-plenger:slice NN-<plan-slug>`, `/developer-plenger:exec NN-<plan-slug>/NN-pK`, `/developer-plenger:review NN-<plan-slug>/NN-pK`, `/developer-plenger:check NN-<plan-slug>/NN-pK`, `/developer-plenger:fix NN-<plan-slug>/NN-pK` — or `TASK-NNN` in place of `NN-pK` to target one task. Task and stage IDs restart per plan, so the plan folder is part of every invocation that names a task. Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all eight.
 
 ## Artifacts
 
@@ -69,6 +70,7 @@ Every hand-off is a file in the repository, never chat state. Nothing important 
 |---|---|---|
 | Pack registration | `/developer-plenger:init` | `AGENTS.md` |
 | Project context | `/developer-plenger:init` creates it, `/developer-plenger:plan` fills it | `context.md` |
+| Design system | `/developer-plenger:design` | `design.md` |
 | Specification | `/developer-plenger:plan` | `specs/NN-<plan-slug>/spec.md` |
 | Stage plan | `/developer-plenger:slice` | `specs/NN-<plan-slug>/slice/NN-pK/tasks.md` |
 | Review | `/developer-plenger:review` | `specs/NN-<plan-slug>/reviews/TASK-NNN.md` |
@@ -79,13 +81,15 @@ Every hand-off is a file in the repository, never chat state. Nothing important 
 
 **Task and stage IDs restart in every plan folder.** `TASK-001` and `slice/01-p0/` exist once per plan, so a bare ID never identifies a task on its own — every invocation names the plan, and the plan folder is where that task's reviews, checks and fixes are written.
 
-The skill that writes an artifact also creates its directory: `/init` creates `context.md` at the root and no directory at all, `/plan` creates `specs/NN-<plan-slug>/` with its `spec.md`, `/slice` creates that plan's `slice/`, `/review` creates its `reviews/`, `/check` creates its `checks/`, and `/fix` creates its `fixes/`.
+The skill that writes an artifact also creates its directory: `/init` creates `context.md` at the root and no directory at all, `/plan` creates `specs/NN-<plan-slug>/` with its `spec.md`, `/design` creates `design.md` at the root with no directory, `/slice` creates that plan's `slice/`, `/review` creates its `reviews/`, `/check` creates its `checks/`, and `/fix` creates its `fixes/`.
+
+`design.md` is the one produced artifact that is **not** per-plan: it sits at the repo root beside `AGENTS.md` and `context.md` and describes the whole app. Each `/design` run extends it rather than creating another, so a later plan's run updates the existing system in place.
 
 Task IDs are `TASK-NNN`, zero-padded to three digits, restarting at `TASK-001` inside every plan folder. `FR-NNN` and `US-NNN` requirement and story IDs restart the same way, because a plan's `spec.md` states only that plan's delta and the plan folder is the namespace. Stage IDs come from the folder name: `02-p1` is `specs/NN-<plan-slug>/slice/02-p1/`. Findings are numbered inside their own review document — `FINDING-001` in `specs/NN-<plan-slug>/reviews/TASK-003.md` — and referenced elsewhere as `NN-<plan-slug>/TASK-003#FINDING-001` when the plan is not implicit.
 
 ## Skill Rules
 
-One entry per skill. All seven, in this shape.
+One entry per skill. All eight, in this shape.
 
 ### INIT
 
@@ -93,7 +97,7 @@ Register the pack and create the empty repository index. Writes both root files 
 
 - Invocation: `/developer-plenger:init`
 - Input: the repository's `AGENTS.md` and `context.md`, if they already exist
-- Produces: `AGENTS.md`, and `context.md` with its thirteen sections and `Current Phase: INIT`
+- Produces: `AGENTS.md`, and `context.md` with its fourteen sections and `Current Phase: INIT`
 
 ### PLAN
 
@@ -102,6 +106,14 @@ Write one plan's specification. Each run is a new plan; earlier plans are never 
 - Invocation: `/developer-plenger:plan <idea>`
 - Input: the user's idea, `context.md`, every existing plan's `spec.md`, and the existing codebase
 - Produces: `specs/NN-<plan-slug>/spec.md`, a new plan folder, and the project's sections in `context.md`
+
+### DESIGN
+
+Fetch design guidance tuned to the app's stack, and write the app-wide design system. Blocks UI work until it exists.
+
+- Invocation: `/developer-plenger:design`, or `/developer-plenger:design NN-<plan-slug>`
+- Input: `AGENTS.md`, `context.md`, the newest plan's `spec.md`, and the existing `design.md` if present
+- Produces: `design.md` at the repo root — the design system for a UI app, or a `not applicable` stub for one without
 
 ### SLICE
 
@@ -164,13 +176,13 @@ The sections, in order, and what makes each one conformant:
 | Section | Conformant when |
 |---|---|
 | `# developer-plenger skill pack` | The title, and the paragraph naming the pack, saying the content is project-independent, and pointing at `context.md` for project facts. |
-| `## Workflow` | The chain, the REVIEW/CHECK sibling rule, the CHECK cadence, the FIX reset rule, the one-plan-folder-per-`PLAN`-run rule, and the namespaced invocation sentence — all seven. |
-| `## Artifacts` | The seven-row table, the one-folder-per-plan paragraph with the ID-restart rule, the directory-creation sentence, and the ID-convention paragraph covering `TASK-NNN`, `FR-NNN` and `US-NNN`. |
-| `## Skill Rules` | Exactly one `###` per skill — all seven, no more and no fewer — each with its one-line description, invocation, input and output. |
+| `## Workflow` | The chain, the REVIEW/CHECK sibling rule, the CHECK cadence, the DESIGN-per-plan rule, the FIX reset rule, the one-plan-folder-per-`PLAN`-run rule, and the namespaced invocation sentence — all eight. |
+| `## Artifacts` | The eight-row table, the one-folder-per-plan paragraph with the ID-restart rule, the app-wide-`design.md` note, the directory-creation sentence, and the ID-convention paragraph covering `TASK-NNN`, `FR-NNN` and `US-NNN`. |
+| `## Skill Rules` | Exactly one `###` per skill — all eight, no more and no fewer — each with its one-line description, invocation, input and output. |
 | `## Task State` | The three named boxes, the no-`status:` rule, one owner per box with its condition, and the derived-`DONE` sentence. |
 
 A file missing a section, carrying a section with drifted content, or naming a
-skill count other than seven is non-conformant.
+skill count other than eight is non-conformant.
 
 ## 4. What to do with an existing AGENTS.md or CLAUDE.md
 

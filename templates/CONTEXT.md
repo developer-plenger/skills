@@ -41,6 +41,12 @@ Read every session. One page. The detail lives in each plan's own
 
 {{This project's own conventions: branching, commit style, formatting, the commands to run before finishing. Facts backed by the repo or given by the user.}}
 
+## Design
+
+<!-- A one-line pointer to the app-wide design.md. Written by /design, not /plan;
+     /plan leaves it as unknown. -->
+{{design.md — UI system or not applicable — what it covers.}}
+
 ## Current Development Status
 
 <!-- One line per plan folder, in this shape:
@@ -68,5 +74,5 @@ Read every session. One page. The detail lives in each plan's own
 
 PLAN
 
-<!-- One of INIT, PLAN, SLICE, EXEC, REVIEW, CHECK, FIX. The skill that just ran
-     writes its own name here. No task ID, no slice name, no free text. -->
+<!-- One of INIT, PLAN, DESIGN, SLICE, EXEC, REVIEW, CHECK, FIX. The skill that
+     just ran writes its own name here. No task ID, no slice name, no free text. -->

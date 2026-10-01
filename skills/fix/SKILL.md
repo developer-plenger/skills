@@ -93,7 +93,7 @@ Completion criterion: every invalidated box is `- [ ]`, and the `## Result` sect
 
 ## 9. Update context.md
 
-Set `Current Phase` to `FIX` — the field holds exactly one of the seven step names (`INIT`, `PLAN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX`), with no task ID, no plan name, no stage name and no free text. Update the state slot of this plan's line in `Current Development Status` only if the resets moved a task back out of the done count, and leave the summary clause alone. Otherwise change nothing else, and never touch another plan's line.
+Set `Current Phase` to `FIX` — the field holds exactly one of the eight step names (`INIT`, `PLAN`, `DESIGN`, `SLICE`, `EXEC`, `REVIEW`, `CHECK`, `FIX`), with no task ID, no plan name, no stage name and no free text. Update the state slot of this plan's line in `Current Development Status` only if the resets moved a task back out of the done count, and leave the summary clause alone. Otherwise change nothing else, and never touch another plan's line.
 
 Completion criterion: the cursor names the step that just ran, and the status section still matches the boxes on disk.
 

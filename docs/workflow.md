@@ -1,6 +1,6 @@
 # Workflow
 
-The `developer-plenger` pack is one workflow, not seven independent prompts. Each skill consumes the artifact the previous one produced and leaves exactly one artifact behind. Nothing important lives in the chat log. One field is shared: `Current Phase` in `context.md`, the workflow's cursor, which every skill advances.
+The `developer-plenger` pack is one workflow, not eight independent prompts. Each skill consumes the artifact the previous one produced and leaves exactly one artifact behind. Nothing important lives in the chat log. One field is shared: `Current Phase` in `context.md`, the workflow's cursor, which every skill advances.
 
 ## One plan, one folder
 
@@ -67,6 +67,13 @@ That summary clause is what makes the file answer "what does this project actual
                               |
                               v
                     +------------------+
+                    |      DESIGN      |
+                    | app-wide         |
+                    | design.md        |
+                    +---------+--------+
+                              |
+                              v
+                    +------------------+
                     |      SLICE       |
                     | fills that plan's|
                     | slice/NN-pK/     |
@@ -105,20 +112,25 @@ That summary clause is what makes the file answer "what does this project actual
 
 REVIEW and CHECK are parallel siblings, not a chain. The edges are `exec -> review` and `exec -> check`. There is no `exec -> review -> check` edge. Either can run first, either can run without the other having run, and both can run at the same time on the same task.
 
+DESIGN sits between PLAN and SLICE and runs once per plan. Unlike every other produced artifact, its output `design.md` is app-wide: each plan's run extends the same root file rather than creating a new one, and a plan that adds no UI leaves it unchanged. `EXEC` refuses a UI task until `design.md` exists.
+
 CHECK does not run after every single task by default. It runs when a stage is finished, or when a task needs a test result before anyone can trust it.
 
 ## Growing the project, one plan at a time
 
 ```text
 /plan  "aplikasi catat pengeluaran"   → specs/01-initial-build/
+/design                                    design.md (app-wide)
 /slice 01-initial-build                     spec.md + slice/01-p0..03-p2
   ... work p0 .. p2 ...
 
 /plan  "tambah budget bulanan"        → specs/02-monthly-budgets/
+/design                                    design.md updated in place
 /slice 02-monthly-budgets                   spec.md + slice/01-p0..03-p2
   ... work p0 .. p2 ...
 
 /plan  "tambah ekspor CSV"            → specs/03-csv-export/
+/design                                    design.md (no new UI: unchanged)
 /slice 03-csv-export                        spec.md + slice/01-p0..02-p1
 ```
 
@@ -128,14 +140,14 @@ What the plan spec cannot say — because it only ever states its own delta — 
 
 ## Skill by skill
 
-Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all seven.
+Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`, and `/review` are claimed by Claude Code's own built-ins, so the namespaced form is required for those and is safe for all eight.
 
 ### INIT — `/developer-plenger:init`
 
 - **Input:** the existing repository.
 - **Output:** `AGENTS.md` and an empty `context.md` at the project root.
-- **Does:** reads any existing `AGENTS.md`, compares it against the pack contract, and writes or repairs it. The content is the same in every project — the workflow chain (`INIT → PLAN → SLICE → EXEC → (REVIEW ∥ CHECK) → FIX`), the seven skill rules, the artifact table, and the task-state rule — and it describes the pack, never the project. Then it creates `context.md` with its thirteen sections empty, because nothing has been planned yet. It asks the user nothing, inspects no project facts, and creates no directory: `specs/` appears on the first `/plan`.
-- **Exit condition:** `AGENTS.md` exists and matches the pack contract section for section, naming all seven skills; `context.md` exists with every section empty and `Current Phase: INIT`.
+- **Does:** reads any existing `AGENTS.md`, compares it against the pack contract, and writes or repairs it. The content is the same in every project — the workflow chain (`INIT → PLAN → DESIGN → SLICE → EXEC → (REVIEW ∥ CHECK) → FIX`), the eight skill rules, the artifact table, and the task-state rule — and it describes the pack, never the project. Then it creates `context.md` with its fourteen sections empty, because nothing has been planned yet. It asks the user nothing, inspects no project facts, and creates no directory: `specs/` appears on the first `/plan`.
+- **Exit condition:** `AGENTS.md` exists and matches the pack contract section for section, naming all eight skills; `context.md` exists with every section empty and `Current Phase: INIT`.
 - **Hand-off:** `/developer-plenger:plan`.
 
 ### PLAN — `/developer-plenger:plan`
@@ -144,6 +156,14 @@ Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`
 - **Output:** `specs/NN-<plan-slug>/spec.md` — a **new** plan folder with its own specification — and the project's sections in `context.md`.
 - **Does:** works out which plan this is (the next free number), reads what already exists and classifies each part of the request as already there, partly there, contradicted, or new ground; critiques it against target user, features, development, security, and scalability; identifies ambiguity; asks the unresolved questions; records the decisions; then writes the plan's spec and updates `context.md`. It detects the stack and the repository's own conventions and records them in `context.md`'s `Technology` and `Project Rules` — `AGENTS.md` carries only the pack contract, so this run owns the repository's facts. A later run creates a new folder rather than editing an existing spec: earlier plans are history.
 - **Exit condition:** `specs/NN-<plan-slug>/spec.md` exists with every section filled or explicitly `None`, every functional requirement is numbered and testable, no unresolved question lives outside §17, and `context.md` carries this plan's ledger line reading `not sliced yet`.
+- **Hand-off:** `/developer-plenger:design`.
+
+### DESIGN — `/developer-plenger:design`
+
+- **Input:** `AGENTS.md`, `context.md`, the newest plan's `spec.md`, and the existing `design.md` if present.
+- **Output:** `design.md` at the repo root — the app-wide design system, or a `not applicable` stub for a project with no UI — and the `## Design` pointer in `context.md`.
+- **Does:** picks the plan, classifies the project as UI or not from `context.md`'s `Technology` and the spec, and proposes a design system for the user to choose; then fetches its current guidance from the internet, adapts it to the app, and writes or extends `design.md` — colors, type, spacing, components, states, accessibility. It writes no source code. A plan that adds no new UI leaves the file unchanged. This is the only produced artifact that is app-wide rather than per-plan.
+- **Exit condition:** `design.md` exists at the root and matches its section contract, or the no-op path changed nothing; `context.md` reads `Current Phase: DESIGN` with its `## Design` section pointing at the file.
 - **Hand-off:** `/developer-plenger:slice NN-<plan-slug>`.
 
 ### SLICE — `/developer-plenger:slice`
@@ -158,7 +178,7 @@ Plugin skills are namespaced by the plugin name; the bare names `/init`, `/plan`
 
 - **Input:** `AGENTS.md`, `context.md`, that plan's `spec.md`, and the slice file.
 - **Output:** application source code, plus the `Implemented` checkbox flipped on the tasks it completed.
-- **Does:** resolves the plan first, because task IDs restart and a bare `TASK-001` exists in every sliced plan; then checks task dependencies, inspects the existing code, implements the task, and validates that it actually runs. Only then does it check the box. A task whose `#### Dependencies` list contains an unchecked task is not implemented.
+- **Does:** resolves the plan first, because task IDs restart and a bare `TASK-001` exists in every sliced plan; then checks the design gate — a UI task is blocked until the app-wide `design.md` exists and applies — and the task's dependencies; inspects the existing code, implements the task against the design system where it draws on one, and validates that it actually runs. Only then does it check the box. A task whose `#### Dependencies` list contains an unchecked task is not implemented.
 - **Exit condition:** the code runs and the task's `Implemented` checkbox is `- [x]`. `Reviewed` and `Tested` are untouched.
 - **Hand-off:** `/developer-plenger:review` and `/developer-plenger:check`, in either order or together.
 
@@ -198,15 +218,15 @@ A task carries three independent checkboxes. They are the only state carrier; th
 
 ## The cursor in context.md
 
-`Current Phase` is the one field outside `/developer-plenger:plan`'s sole ownership, because it is the workflow's cursor rather than project content. It holds exactly one word, one of the seven step names:
+`Current Phase` is the one field outside `/developer-plenger:plan`'s sole ownership, because it is the workflow's cursor rather than project content. It holds exactly one word, one of the eight step names:
 
 ```text
-INIT | PLAN | SLICE | EXEC | REVIEW | CHECK | FIX
+INIT | PLAN | DESIGN | SLICE | EXEC | REVIEW | CHECK | FIX
 ```
 
 The skill that just ran sets it to its own step name, with no `TASK-NNN` suffix, no plan name, no stage name and no free text. Naming the step just completed is the same statement as saying where the chain is. Which plan and stage were being worked on goes in the skill's report, not in this field.
 
-Everything else in `context.md` belongs to `/developer-plenger:plan` — except `Current Development Status`, whose state slots are rewritten by whichever skill changed the boxes they count, one plan's line at a time. The summary clause on each line stays `/plan`'s: a later skill flips boxes, it does not restate what the plan delivers.
+Everything else in `context.md` belongs to `/developer-plenger:plan` — except two sections: `## Design`, a one-line pointer written by `/design`, and `Current Development Status`, whose state slots are rewritten by whichever skill changed the boxes they count, one plan's line at a time. The summary clause on each line stays `/plan`'s: a later skill flips boxes, it does not restate what the plan delivers.
 
 The skill that writes an artifact also creates its directory, so a fresh clone acquires `specs/01-<plan-slug>/` on the first `/developer-plenger:plan`, then that plan's `slice/`, `reviews/`, `checks/` and `fixes/` as each is first needed. See [architecture.md](architecture.md).
 
@@ -216,9 +236,10 @@ A user with an idea and an empty repository:
 
 1. Type `/developer-plenger:init`. The agent writes `AGENTS.md`, the pack's registration file, and an empty `context.md`; it asks nothing.
 2. Type `/developer-plenger:plan` and describe the idea in a sentence or two. The agent asks its clarifying questions, detects the stack and the repository's conventions, then creates `specs/01-<plan-slug>/spec.md` and adds the project's sections and this plan's ledger line to `context.md`.
-3. Type `/developer-plenger:slice 01-<plan-slug>`. The agent cuts the spec into `specs/01-<plan-slug>/slice/01-p0/tasks.md` and the following stages, with tasks and acceptance criteria.
-4. Type `/developer-plenger:exec 01-<plan-slug>/01-p0`. The agent implements the tasks in order, respecting dependencies, and flips each `Implemented` box as the code runs.
-5. Type `/developer-plenger:review 01-<plan-slug>/01-p0` and `/developer-plenger:check 01-<plan-slug>/01-p0`. These are siblings: run both, in either order. Each writes its document under that plan's `reviews/` or `checks/`.
-6. Type `/developer-plenger:fix` with the findings and failures in hand. The agent repairs the code, resets the invalidated checkboxes, and the review and check run again on those boxes.
+3. Type `/developer-plenger:design`. The agent proposes a design system for the stack, fetches its current guidance, and writes `design.md` at the root — or a `not applicable` stub if the project has no UI.
+4. Type `/developer-plenger:slice 01-<plan-slug>`. The agent cuts the spec into `specs/01-<plan-slug>/slice/01-p0/tasks.md` and the following stages, with tasks and acceptance criteria.
+5. Type `/developer-plenger:exec 01-<plan-slug>/01-p0`. The agent implements the tasks in order, respecting the design gate and dependencies, and flips each `Implemented` box as the code runs.
+6. Type `/developer-plenger:review 01-<plan-slug>/01-p0` and `/developer-plenger:check 01-<plan-slug>/01-p0`. These are siblings: run both, in either order. Each writes its document under that plan's `reviews/` or `checks/`.
+7. Type `/developer-plenger:fix` with the findings and failures in hand. The agent repairs the code, resets the invalidated checkboxes, and the review and check run again on those boxes.
 
-When every task in a stage reaches `DONE`, the next stage is already waiting at the next number. When the app gains a feature, go back to step 2: `/developer-plenger:plan` creates `specs/02-<plan-slug>/` with its own spec, `/developer-plenger:slice 02-<plan-slug>` gives it its own `01-p0`, and `context.md` gains a second ledger line while the first stays exactly as it was.
+When every task in a stage reaches `DONE`, the next stage is already waiting at the next number. When the app gains a feature, go back to step 2: `/developer-plenger:plan` creates `specs/02-<plan-slug>/` with its own spec, `/developer-plenger:design` extends `design.md` if the feature adds UI, `/developer-plenger:slice 02-<plan-slug>` gives it its own `01-p0`, and `context.md` gains a second ledger line while the first stays exactly as it was.

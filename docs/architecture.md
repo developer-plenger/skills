@@ -14,7 +14,7 @@ scripts/     pack integrity       the one check that catches silent drift
 
 - `skills/<name>/SKILL.md` holds the procedure: the ordered steps an agent performs for that invocation. It is the only file the agent must load to run a skill.
 - `skills/<name>/references/` holds the detailed formats and checklists the procedure pulls in on demand: the `spec.md` section list, the `context.md` shape, review checklists, dependency rules, task-state rules.
-- `templates/` holds one copy-paste seed per produced artifact — all seven of them — for humans who want to see the shape before running anything.
+- `templates/` holds one copy-paste seed per produced artifact — all eight of them — for humans who want to see the shape before running anything.
 - `scripts/` holds the pack's own test, which guards the invariants that break silently.
 - `docs/` explains the workflow, this layout, and the state model to a human reader. One file there is not pack documentation: `docs/design-brief.md` is the original Indonesian design brief, kept for the reasoning behind the design and explicitly not a contract. Its provenance header names the places where it diverges from the shipped pack.
 
@@ -29,13 +29,14 @@ The rule:
 - `SKILL.md` — procedure: the steps, the order, the exit condition, the guards. Short enough to load unconditionally.
 - `references/` — formats and checklists: loaded only at the step that needs them. A file with the exact section list of `spec.md` belongs here, not in the procedure.
 
-For example, `skills/plan/SKILL.md` describes determining which plan this is, reading what already exists, critiquing the request, finding ambiguity, asking questions, and writing the plan. The nineteen-section format lives in `skills/plan/references/specification.md`, and the `context.md` contract — thirteen sections and the update discipline — in `skills/plan/references/context.md`. The same split applies to `slice` (vertical-slice and dependency rules), `exec` (implementation and completion), `review` (checklist and findings), `check` (testing and result recording), and `fix` (remediation).
+For example, `skills/plan/SKILL.md` describes determining which plan this is, reading what already exists, critiquing the request, finding ambiguity, asking questions, and writing the plan. The nineteen-section format lives in `skills/plan/references/specification.md`, and the `context.md` contract — fourteen sections and the update discipline — in `skills/plan/references/context.md`. The same split applies to `design` (the `design.md` format and how to source it), `slice` (vertical-slice and dependency rules), `exec` (implementation and completion), `review` (checklist and findings), `check` (testing and result recording), and `fix` (remediation).
 
 ## What lives where in a repository using the pack
 
 ```text
 AGENTS.md                          pack contract, identical in every project
 context.md                         the project's memory, one page, spans all plans
+design.md                          the app-wide design system, spans all plans
 specs/
   01-initial-build/                a plan folder, created by its own /plan run
     spec.md                        that plan's 19-section specification (its delta)
@@ -49,21 +50,22 @@ specs/
     slice/01-p0/tasks.md           its own p0 — stage numbering restarts per plan
 ```
 
-**The plan folder is the unit of the design.** A `/plan` run is a plan, and a plan is a folder: `specs/NN-<plan-slug>/` holds the specification that plan was built from and every artifact its execution produced. Nothing about a plan lives outside its folder except one ledger line in `context.md`.
+**The plan folder is the unit of the design.** A `/plan` run is a plan, and a plan is a folder: `specs/NN-<plan-slug>/` holds the specification that plan was built from and every artifact its execution produced. Almost nothing about a plan lives outside its folder — two exceptions sit at the root: one ledger line per plan in `context.md`, and `design.md`, which is app-wide rather than per-plan.
 
 ## Context mechanisms
 
-Five mechanisms carry context, each answering a different question, each with one owner:
+Six mechanisms carry context, each answering a different question, each with one owner:
 
 | Mechanism | Question it answers | Where it lives | Written by |
 | --- | --- | --- | --- |
 | `AGENTS.md` | How does the pack work — which skills exist, what each produces, where artifacts go? | project root | `/init` |
-| `context.md` | What is this project across all its plans — its stack, its conventions, what it does, and where development stands? | project root | `/init` creates it, `/plan` fills it and writes each plan's summary clause, `/slice` and the four later skills keep the state slots current |
+| `context.md` | What is this project across all its plans — its stack, its conventions, what it does, and where development stands? | project root | `/init` creates it, `/plan` fills it and writes each plan's summary clause, `/design` writes its `## Design` pointer, `/slice` and the four later skills keep the state slots current |
+| `design.md` | What does the app look like — the design system every UI task obeys? | project root | `/design` |
 | Plan specs | What does *this* plan build? | `specs/NN-<plan-slug>/spec.md` | `/plan` |
 | Slice files | What are this plan's development stages, and what do we do next? | `specs/NN-<plan-slug>/slice/NN-pK/tasks.md` | `/slice` |
 | Checkboxes | What is already done? | inside the slice file | `/exec`, `/review`, `/check`, `/fix` |
 
-The chain runs top to bottom: how the pack works, then what the project is, then what this plan builds, then what to do next, then what is finished.
+The chain runs top to bottom: how the pack works, then what the project is, then what the app looks like, then what this plan builds, then what to do next, then what is finished.
 
 ### Why each plan gets its own spec
 
@@ -91,17 +93,19 @@ The cost is real and worth stating: **a bare `TASK-NNN` no longer identifies a t
 
 Each artifact has exactly one owning skill. A skill that needs a change in someone else's artifact messages the human instead of editing it.
 
-The exception is `context.md`, which is shared by design and split by field rather than by file. `Current Phase` has seven writers, because it is the workflow's cursor rather than project content. `Current Development Status` has six — `/plan` adds the new plan's line and its summary clause, `/slice` fills in the stages it produced, and `/exec`, `/review`, `/check` and `/fix` update that plan's stage states and the task count whenever they move a box. `/review` is in that list because flipping `Reviewed` can be the box that makes a stage `DONE`.
+The exception is `context.md`, which is shared by design and split by field rather than by file. `Current Phase` has eight writers, because it is the workflow's cursor rather than project content. `Current Development Status` has six — `/plan` adds the new plan's line and its summary clause, `/slice` fills in the stages it produced, and `/exec`, `/review`, `/check` and `/fix` update that plan's stage states and the task count whenever they move a box. `/review` is in that list because flipping `Reviewed` can be the box that makes a stage `DONE`. `## Design` has one writer, `/design`, which points it at the app-wide `design.md`.
 
 Inside that section the split is by part, not by line: the **state slot** belongs to whichever skill moved a box, the **summary clause** belongs to `/plan` alone. That is what keeps the clause trustworthy — it is the one piece of prose four other skills are forbidden to touch. The remaining eleven sections belong to `/plan` alone.
 
-`AGENTS.md` is the only other file with any claim to being shared, and it is not: `/init` owns it and the other six skills read it.
+`AGENTS.md` is the only other file with any claim to being shared, and it is not: `/init` owns it and the other seven skills read it.
 
 | Artifact | Owned by | Read by |
 | --- | --- | --- |
 | `AGENTS.md` | `/init` | every skill |
 | `context.md` (its eleven project sections) | `/plan` | every skill |
+| `design.md` | `/design` | `/exec` (every UI task), `/review`, `/check` |
 | `Current Phase` (a field inside `context.md`) | every skill, each setting it to its own step | every skill |
+| `## Design` (a section inside `context.md`) | `/design` | every skill |
 | `Current Development Status` (a section inside `context.md`) | `/plan` adds a line and writes its summary clause; `/slice`, `/exec`, `/review`, `/check`, `/fix` keep the state slots current, one plan's line at a time, and never rewrite the clause | every skill |
 | `specs/NN-<plan-slug>/spec.md` | `/plan` | `/slice`, `/exec`, `/review`, `/check`, `/fix`, later `/plan` runs |
 | `specs/NN-<plan-slug>/slice/NN-pK/tasks.md` | `/slice` | `/exec`, `/review`, `/check`, `/fix` |
@@ -111,19 +115,19 @@ Inside that section the split is by part, not by line: the **state slot** belong
 
 A plan folder's existence is `/plan`'s claim too: only `/plan` creates one, and only `/plan` chooses its number. `/slice` fills a folder's `slice/`, and never adds stages to a plan other than the one it was pointed at.
 
-The skill that writes an artifact also creates that artifact's directory: `/plan` creates `specs/NN-<plan-slug>/` with its `spec.md`, `/slice` creates that plan's `slice/`, `/review` creates its `reviews/`, `/check` creates its `checks/`, and `/fix` creates its `fixes/`. `/init` creates no directory at all — a fresh clone has no `specs/` tree until the first `/plan` runs.
+The skill that writes an artifact also creates that artifact's directory: `/plan` creates `specs/NN-<plan-slug>/` with its `spec.md`, `/design` creates `design.md` at the root and no directory, `/slice` creates that plan's `slice/`, `/review` creates its `reviews/`, `/check` creates its `checks/`, and `/fix` creates its `fixes/`. `/init` creates no directory at all — a fresh clone has no `specs/` tree until the first `/plan` runs.
 
 ### Current Phase
 
-`Current Phase` holds exactly one word, one of the seven step names:
+`Current Phase` holds exactly one word, one of the eight step names:
 
 ```text
-INIT | PLAN | SLICE | EXEC | REVIEW | CHECK | FIX
+INIT | PLAN | DESIGN | SLICE | EXEC | REVIEW | CHECK | FIX
 ```
 
-The skill that just ran sets it to its own step name, with no `TASK-NNN` suffix, no plan name and no stage name. `/init` leaves it at `INIT`, `/plan` moves it to `PLAN`, `/slice` to `SLICE`, `/exec` to `EXEC`, `/review` to `REVIEW`, `/check` to `CHECK`, `/fix` to `FIX`.
+The skill that just ran sets it to its own step name, with no `TASK-NNN` suffix, no plan name and no stage name. `/init` leaves it at `INIT`, `/plan` moves it to `PLAN`, `/design` to `DESIGN`, `/slice` to `SLICE`, `/exec` to `EXEC`, `/review` to `REVIEW`, `/check` to `CHECK`, `/fix` to `FIX`.
 
-A value outside the enum — `FIX TASK-002, back to review`, or `EXEC 02-p1` — is a broken file, not a richer statement of position. The field stays parseable as one of seven words, and the plan, stage and task being worked on belong in the skill's report. This is why the field does not also carry coordinates: nothing that has to stay a closed enum can absorb free text.
+A value outside the enum — `FIX TASK-002, back to review`, or `EXEC 02-p1` — is a broken file, not a richer statement of position. The field stays parseable as one of eight words, and the plan, stage and task being worked on belong in the skill's report. This is why the field does not also carry coordinates: nothing that has to stay a closed enum can absorb free text.
 
 Checkbox ownership is narrower than artifact ownership, because four skills write into the same slice file:
 

@@ -104,7 +104,7 @@ Create the folder `specs/NN-<plan-slug>/`, then write two files.
 
 **`specs/NN-<plan-slug>/spec.md`** — following `references/specification.md`: all 19 sections, in order, each filled or explicitly `None`/`Unknown`. The spec is **scoped to this plan**: §8 lists only the requirements this plan introduces, and a section this plan does not touch is `None` rather than a copy of an earlier plan's text. Number functional requirements `FR-001` onward **restarting per plan** — the plan folder is the namespace. Record only decisions actually taken in §18, each with its reason and the alternatives dropped. Park anything unresolved in §17.
 
-**`context.md`** — following `references/context.md`. On `plan-01`, fill all 13 sections from the spec and the discovery, each `Technology` and `Project Rules` entry naming its proving file or the answer that supplied it — `unknown` where neither exists, never a guess. On a later plan, append the new feature names to `Core Features`, the new steps to `User Flow`, the new rules to `Important Business Rules`, and add this plan's line to `Current Development Status`; leave the older lines alone.
+**`context.md`** — following `references/context.md`. On `plan-01`, fill the 13 sections `/plan` owns from the spec and the discovery, each `Technology` and `Project Rules` entry naming its proving file or the answer that supplied it — `unknown` where neither exists, never a guess. Leave `## Design` as `unknown`; it is `/design`'s section, written by the run that follows. On a later plan, append the new feature names to `Core Features`, the new steps to `User Flow`, the new rules to `Important Business Rules`, and add this plan's line to `Current Development Status`; leave the older lines alone.
 
 That line carries the one-clause summary of what this plan builds, read off the spec you just wrote — §1 Overview, §3 Goals, §8 Functional Requirements. It is the part of the file a reader relies on to know what the project does without opening a single spec, so `- plan-02 — monthly budgets — not sliced yet — a budget per category, and spending shown against it` is right and `- plan-02 — monthly budgets — not sliced yet` is not.
 
@@ -120,6 +120,6 @@ Set `Current Phase` to `PLAN` in `context.md`. The new plan's `Current Developme
 
 ### 12. Report
 
-Tell the user: the plan folder and spec written, which plan this was and what it adds, the requirement IDs added, what already existed and was reused, the decisions taken in §18 and the alternatives dropped, what is still open in §17, and the next command — `/slice`.
+Tell the user: the plan folder and spec written, which plan this was and what it adds, the requirement IDs added, what already existed and was reused, the decisions taken in §18 and the alternatives dropped, what is still open in §17, and the next command — `/design`.
 
 **Done when:** the user knows what was specified, what remains open, and what to run next.
